@@ -1,0 +1,175 @@
+﻿<Window x:Class="OD.Planner.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="OD.Planner"
+        Width="380" Height="560" MinWidth="300" MinHeight="240"
+        WindowStyle="None" ResizeMode="CanResize" AllowsTransparency="True" Background="Transparent"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        FontFamily="{StaticResource DefaultFontFamily}"
+        StateChanged="OnStateChanged"
+        Loaded="OnLoaded"
+        Closing="OnClosing">
+
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control" Key="N" Command="{Binding AddTaskCommand}" />
+        <KeyBinding Key="F2" Command="{Binding EditSelectedTaskCommand}" />
+        <KeyBinding Key="Delete" Command="{Binding DeleteSelectedTaskCommand}" />
+    </Window.InputBindings>
+
+    <Border x:Name="WindowBorder" CornerRadius="10" Background="{DynamicResource BgBrush}"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Header (drag region) -->
+            <Grid x:Name="HeaderBar" Background="Transparent" MouseLeftButtonDown="Header_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
+                    <TextBlock Text="&#xE8F7;" FontFamily="{StaticResource IconFontFamily}" FontSize="13"
+                               Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text="OD.Planner" Style="{StaticResource TitleTextStyle}" Margin="8,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Style="{StaticResource WindowButtonStyle}" Content="&#xE713;"
+                            Command="{Binding OpenSettingsCommand}"
+                            AutomationProperties.Name="Paramètres" AutomationProperties.AutomationId="SettingsButton"
+                            ToolTip="Paramètres" />
+                    <Button x:Name="MinimizeButton" Style="{StaticResource WindowButtonStyle}" Content="&#xE921;"
+                            Click="Minimize_Click" />
+                    <Button x:Name="MaximizeButton" Style="{StaticResource WindowButtonStyle}" Content="&#xE922;"
+                            Click="Maximize_Click" />
+                    <Button Style="{StaticResource WindowCloseButtonStyle}" Content="&#xE8BB;"
+                            Click="CloseWindow_Click" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Toolbar -->
+            <Grid Grid.Row="1" Margin="10,0,10,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ComboBox Grid.Column="0" Width="120" Style="{StaticResource ComboBoxBaseStyle}"
+                          ItemsSource="{Binding CategoryFilters}"
+                          SelectedItem="{Binding SelectedCategoryFilter}"
+                          DisplayMemberPath="DisplayName"
+                          ToolTip="Filtrer par catégorie" />
+                <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitchStyle}" Content="Terminées"
+                          IsChecked="{Binding ShowCompleted}" Margin="12,0,0,0" VerticalAlignment="Center"
+                          ToolTip="Afficher ou masquer les tâches terminées" />
+                <Button Grid.Column="2" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding AddTaskCommand}"
+                        Margin="12,0,0,0" ToolTip="Nouvelle tâche (Ctrl+N)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE710;" FontFamily="{StaticResource IconFontFamily}" FontSize="11"
+                                   VerticalAlignment="Center" Margin="0,0,6,0" />
+                        <TextBlock Text="Ajouter" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- List -->
+            <Grid Grid.Row="2">
+                <ListBox ItemsSource="{Binding Tasks}"
+                         SelectedItem="{Binding SelectedTask}"
+                         ItemContainerStyle="{StaticResource TaskRowContainerStyle}"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         Background="Transparent" BorderThickness="0" Padding="0,0,2,6">
+                    <ListBox.Resources>
+                        <Style TargetType="ScrollBar" BasedOn="{StaticResource CompactScrollBarStyle}" />
+                    </ListBox.Resources>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource TaskRowBorderStyle}">
+                                <Grid>
+                                    <Grid Margin="10,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <CheckBox Style="{StaticResource TaskCheckBoxStyle}"
+                                                  IsChecked="{Binding IsCompleted, Mode=OneWay}"
+                                                  Command="{Binding DataContext.ToggleCompletedCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                  CommandParameter="{Binding}" VerticalAlignment="Center"
+                                                  ToolTip="Marquer comme terminée" />
+
+                                        <Rectangle Grid.Column="1" Width="4" RadiusX="2" RadiusY="2"
+                                                   Fill="{Binding PriorityBackground}" Margin="8,0"
+                                                   VerticalAlignment="Stretch" />
+
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Title}" Style="{StaticResource TaskTitleTextStyle}" />
+                                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                                <Border Style="{StaticResource CategoryChipStyle}"
+                                                        Visibility="{Binding HasCategory, Converter={StaticResource BoolToVisible}}">
+                                                    <TextBlock Text="{Binding CategoryLabel}"
+                                                               Style="{StaticResource ChipTextStyle}"
+                                                               Foreground="{DynamicResource CategoryChipForeground}" />
+                                                </Border>
+                                                <Border Style="{StaticResource PriorityChipStyle}"
+                                                        Background="{Binding PriorityBackground}">
+                                                    <TextBlock Text="{Binding PriorityLabel}"
+                                                               Style="{StaticResource ChipTextStyle}"
+                                                               Foreground="{Binding PriorityForeground}" />
+                                                </Border>
+                                                <Border Style="{StaticResource DeadlineChipStyle}"
+                                                        Background="{Binding DeadlineBackground}"
+                                                        Visibility="{Binding DeadlineVisible, Converter={StaticResource BoolToVisible}}">
+                                                    <TextBlock Text="{Binding DeadlineText}"
+                                                               Style="{StaticResource CountdownTextStyle}"
+                                                               Foreground="{Binding DeadlineForeground}" />
+                                                </Border>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Style="{StaticResource GhostButtonStyle}" Content="+1j"
+                                                    Command="{Binding DataContext.AddOneDayCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                    CommandParameter="{Binding}" ToolTip="Repousser d'un jour" />
+                                            <Button Style="{StaticResource GhostButtonStyle}" Content="+1sem"
+                                                    Command="{Binding DataContext.AddOneWeekCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                    CommandParameter="{Binding}" ToolTip="Repousser d'une semaine" />
+                                            <Button Style="{StaticResource IconButtonStyle}" Content="&#xE70F;"
+                                                    Command="{Binding DataContext.EditTaskCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                    CommandParameter="{Binding}" ToolTip="Modifier (F2)" />
+                                            <Button Style="{StaticResource IconButtonStyle}" Content="&#xE74D;"
+                                                    Foreground="{DynamicResource TextTertiaryBrush}"
+                                                    Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                    CommandParameter="{Binding}" ToolTip="Supprimer" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Border BorderBrush="{Binding GlowBrush}" BorderThickness="1.5" CornerRadius="7"
+                                            IsHitTestVisible="False"
+                                            Opacity="{Binding BlinkOn, Converter={StaticResource BlinkOpacity}}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Visibility="{Binding NoTasks, Converter={StaticResource BoolToVisible}}">
+                    <TextBlock Text="&#xE73E;" FontFamily="{StaticResource IconFontFamily}" FontSize="40"
+                               Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Aucune tâche" Style="{StaticResource BodyTextStyle}"
+                               Foreground="{DynamicResource TextTertiaryBrush}"
+                               HorizontalAlignment="Center" Margin="0,10,0,0" />
+                    <Button Style="{StaticResource PrimaryButtonStyle}" Command="{Binding AddTaskCommand}"
+                            Content="Ajouter une tâche" Margin="0,18,0,0" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

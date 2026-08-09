@@ -1,0 +1,53 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="OD.Planner.Theme.IsLight">#FF000000</Color>
+
+    <!-- Neutrals -->
+    <SolidColorBrush x:Key="BgBrush" Color="#F7F7F9" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="SurfaceAltBrush" Color="#F0F0F3" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#E2E2E8" />
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1F2328" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#5C6370" />
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#8B93A1" />
+
+    <!-- Accent -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#6366F1" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#4F46E5" />
+    <SolidColorBrush x:Key="AccentPressedBrush" Color="#4338CA" />
+    <SolidColorBrush x:Key="AccentSubtleBrush" Color="#EEF2FF" />
+
+    <!-- Window -->
+    <SolidColorBrush x:Key="WindowButtonHoverBrush" Color="#E2E2E8" />
+    <SolidColorBrush x:Key="CloseButtonHoverBrush" Color="#C42B1C" />
+    <SolidColorBrush x:Key="CloseButtonHoverForegroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="OverlayBrush" Color="#80000000" />
+
+    <!-- Scrollbar -->
+    <SolidColorBrush x:Key="ScrollThumbBrush" Color="#C9CDD6" />
+    <SolidColorBrush x:Key="ScrollThumbHoverBrush" Color="#B4B9C5" />
+
+    <!-- Priority -->
+    <SolidColorBrush x:Key="PriorityLowBackground" Color="#ECEDEF" />
+    <SolidColorBrush x:Key="PriorityLowForeground" Color="#5F6368" />
+    <SolidColorBrush x:Key="PriorityMediumBackground" Color="#DEE9FB" />
+    <SolidColorBrush x:Key="PriorityMediumForeground" Color="#1D6FD8" />
+    <SolidColorBrush x:Key="PriorityUrgentBackground" Color="#FCEFD8" />
+    <SolidColorBrush x:Key="PriorityUrgentForeground" Color="#B45309" />
+    <SolidColorBrush x:Key="PriorityVeryUrgentBackground" Color="#FBE0DD" />
+    <SolidColorBrush x:Key="PriorityVeryUrgentForeground" Color="#B42318" />
+
+    <!-- Deadline -->
+    <SolidColorBrush x:Key="DueTodayBackground" Color="#FCEFD8" />
+    <SolidColorBrush x:Key="DueTodayForeground" Color="#B45309" />
+    <SolidColorBrush x:Key="OverdueBackground" Color="#FBE0DD" />
+    <SolidColorBrush x:Key="OverdueForeground" Color="#DC2626" />
+    <SolidColorBrush x:Key="AlarmGlowBrush" Color="#DC2626" />
+    <SolidColorBrush x:Key="CompleteBrush" Color="#10B981" />
+
+    <!-- Category -->
+    <SolidColorBrush x:Key="CategoryChipBackground" Color="#F0F0F3" />
+    <SolidColorBrush x:Key="CategoryChipForeground" Color="#5C6370" />
+
+</ResourceDictionary>

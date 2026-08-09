@@ -1,0 +1,96 @@
+<Window x:Class="OD.Planner.Views.TaskEditDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="380" SizeToContent="Height" MaxHeight="720"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
+        FontFamily="{StaticResource DefaultFontFamily}">
+
+    <Border CornerRadius="10" Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+        <Grid Margin="18,12,18,16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid>
+                <TextBlock Text="{Binding WindowTitle}" Style="{StaticResource TitleTextStyle}" VerticalAlignment="Center" />
+                <Button Style="{StaticResource WindowCloseButtonStyle}" Content="&#xE8BB;"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Click="CloseWindow_Click" />
+            </Grid>
+
+            <!-- Body -->
+            <StackPanel Grid.Row="1" Margin="0,12,0,0">
+                <TextBlock Text="Titre" Style="{StaticResource SectionHeaderTextStyle}" Margin="0,0,0,4" />
+                <TextBox Style="{StaticResource TextBoxBaseStyle}"
+                         Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Catégorie" Style="{StaticResource SectionHeaderTextStyle}" Margin="0,0,0,4" />
+                        <ComboBox Style="{StaticResource ComboBoxBaseStyle}"
+                                  ItemsSource="{Binding Categories}"
+                                  SelectedItem="{Binding SelectedCategory}"
+                                  DisplayMemberPath="Name" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Priorité" Style="{StaticResource SectionHeaderTextStyle}" Margin="0,0,0,4" />
+                        <ComboBox Style="{StaticResource ComboBoxBaseStyle}"
+                                  ItemsSource="{Binding Priorities}"
+                                  SelectedItem="{Binding SelectedPriority}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Label}" Foreground="{Binding Foreground}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock Text="Échéance" Style="{StaticResource SectionHeaderTextStyle}" Margin="0,14,0,4" />
+                <RadioButton x:Name="RbNone" Style="{StaticResource RadioButtonStyle}" Content="Aucune échéance"
+                             GroupName="Deadline" Tag="0" Checked="Rb_Checked" />
+                <RadioButton x:Name="RbDays" Style="{StaticResource RadioButtonStyle}"
+                             Content="X jours après la création" GroupName="Deadline" Tag="1" Checked="Rb_Checked" />
+                <StackPanel x:Name="DaysPanel" Orientation="Horizontal" Margin="27,2,0,0" Visibility="Collapsed">
+                    <Slider x:Name="DaysSlider" Style="{StaticResource SliderBaseStyle}" Width="170" Minimum="1"
+                            Maximum="365" IsSnapToTickEnabled="True" Value="{Binding DeadlineDays}"
+                            VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding DeadlineDays}" Style="{StaticResource CountdownTextStyle}"
+                               Foreground="{DynamicResource TextPrimaryBrush}" MinWidth="28"
+                               VerticalAlignment="Center" Margin="10,0,0,0" />
+                    <TextBlock Text="jour(s)" Style="{StaticResource CaptionTextStyle}" VerticalAlignment="Center"
+                               Margin="6,0,0,0" />
+                </StackPanel>
+                <RadioButton x:Name="RbDate" Style="{StaticResource RadioButtonStyle}" Content="Date fixe"
+                             GroupName="Deadline" Tag="2" Checked="Rb_Checked" />
+                <StackPanel x:Name="DatePanel" Margin="27,2,0,0" Visibility="Collapsed">
+                    <DatePicker SelectedDate="{Binding DeadlineDate}" Style="{StaticResource DatePickerBaseStyle}"
+                                Width="180" HorizontalAlignment="Left" />
+                </StackPanel>
+
+                <TextBlock Text="{Binding Error}" Style="{StaticResource BodyTextStyle}"
+                           Foreground="{DynamicResource OverdueForeground}" Margin="0,10,0,0"
+                           TextWrapping="Wrap"
+                           Visibility="{Binding Error, Converter={StaticResource EmptyToCollapsed}}" />
+            </StackPanel>
+
+            <!-- Footer -->
+            <Grid Grid.Row="2" Margin="0,18,0,0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Style="{StaticResource SecondaryButtonStyle}" Content="Annuler" Margin="0,0,10,0"
+                            Click="Cancel_Click" />
+                    <Button Style="{StaticResource PrimaryButtonStyle}" Content="Enregistrer" Click="Save_Click" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

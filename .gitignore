@@ -1,0 +1,57 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio generated files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+packages/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# .NET
+artifacts/
+*.Appx
+*.appxmanifest
+*.sqlite
+*.db
+*.db-journal
+
+# Profiling
+*.pfx
+*.publishsettings
+
+# IDE
+.vs/
+.idea/
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local settings created at runtime
+settings.json
+tasks.db
+*.vshost.*
