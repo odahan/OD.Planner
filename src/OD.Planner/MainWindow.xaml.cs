@@ -68,6 +68,15 @@ public partial class MainWindow : Window
         _settings.WindowWidth = bounds.Width;
         _settings.WindowHeight = bounds.Height;
         SettingsService.Save(_settings);
+
+        // ShutdownMode is OnExplicitShutdown: the FirstRunDialog is the first window
+        // shown, so WPF auto-promotes it to Application.MainWindow and closing it would
+        // otherwise shut the app down (OnMainWindowClose). We exit explicitly here,
+        // only when the real main window is actually being closed.
+        if (!e.Cancel)
+        {
+            Application.Current.Shutdown();
+        }
     }
 
     private void ApplySavedBounds()

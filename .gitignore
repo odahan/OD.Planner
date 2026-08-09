@@ -55,3 +55,6 @@ Desktop.ini
 settings.json
 tasks.db
 *.vshost.*
+
+# Publishing folder
+publish
