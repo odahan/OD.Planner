@@ -35,6 +35,16 @@ dotnet run --project src/OD.Planner -c Release
 
 You can also open `OD.Planner.slnx` in Visual Studio 2022 or later.
 
+## Publishing a standalone executable
+
+A single-file, self-contained `OD.Planner.exe` (no .NET runtime required) can be produced with the bundled publish profile:
+
+```powershell
+dotnet publish src/OD.Planner -c Release -p:PublishProfile=win-x64
+```
+
+The executable is written to `src/OD.Planner/bin/Release/net10.0-windows/win-x64/publish/`. On first run it creates `settings.json` and `tasks.db` next to the executable.
+
 ## Usage
 
 - `Ctrl+N` — new task
