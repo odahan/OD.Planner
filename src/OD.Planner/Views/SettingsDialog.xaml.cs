@@ -5,10 +5,14 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using Microsoft.Win32;
+using OD.Planner.Localization;
 using OD.Planner.ViewModels;
 
 namespace OD.Planner.Views;
 
+/// <summary>
+/// Settings dialog for configuring application preferences.
+/// </summary>
 public partial class SettingsDialog : Window
 {
     private const int WM_NCHITTEST = 0x84;
@@ -26,11 +30,17 @@ public partial class SettingsDialog : Window
 
     private const int ResizeBorder = 8;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsDialog"/> class.
+    /// </summary>
     public SettingsDialog()
     {
         InitializeComponent();
     }
 
+    /// <summary>
+    /// Called when the window source is initialized.
+    /// </summary>
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
@@ -38,8 +48,14 @@ public partial class SettingsDialog : Window
         HwndSource.FromHwnd(handle)?.AddHook(WndProc);
     }
 
+    /// <summary>
+    /// Closes the settings dialog.
+    /// </summary>
     private void CloseWindow_Click(object sender, RoutedEventArgs e) => Close();
 
+    /// <summary>
+    /// Handles mouse left button down on the header for dragging.
+    /// </summary>
     private void Header_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         try
@@ -52,6 +68,9 @@ public partial class SettingsDialog : Window
         }
     }
 
+    /// <summary>
+    /// Processes Windows messages for resize handling.
+    /// </summary>
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
         switch (msg)
@@ -86,6 +105,9 @@ public partial class SettingsDialog : Window
         return IntPtr.Zero;
     }
 
+    /// <summary>
+    /// Performs a hit test for resize borders.
+    /// </summary>
     private int HitTestResize(Point pt)
     {
         if (pt.X < 0 || pt.Y < 0 || pt.X > ActualWidth || pt.Y > ActualHeight)
@@ -141,6 +163,9 @@ public partial class SettingsDialog : Window
         return HTCLIENT;
     }
 
+    /// <summary>
+    /// Opens a folder browser dialog to change the database location.
+    /// </summary>
     private void ChangeDb_Click(object sender, RoutedEventArgs e)
     {
         if (DataContext is not SettingsViewModel vm)
@@ -150,7 +175,7 @@ public partial class SettingsDialog : Window
 
         var dialog = new OpenFolderDialog
         {
-            Title = "Choisir le dossier de la base de données",
+            Title = LocalizationService.Instance["ChooseDbFolder"],
         };
 
         var currentDir = Path.GetDirectoryName(vm.DbPath);

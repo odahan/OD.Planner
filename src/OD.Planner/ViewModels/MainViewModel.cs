@@ -4,6 +4,7 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OD.Planner.Data;
+using OD.Planner.Localization;
 using OD.Planner.Logic;
 using OD.Planner.Models;
 using OD.Planner.Services;
@@ -11,14 +12,31 @@ using OD.Planner.Views;
 
 namespace OD.Planner.ViewModels;
 
+/// <summary>
+/// Represents a category filter option in the main window.
+/// </summary>
 public sealed class CategoryFilter
 {
+    /// <summary>
+    /// Gets the display name for the filter.
+    /// </summary>
     public string DisplayName { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Gets the category ID (null for "All").
+    /// </summary>
     public long? CategoryId { get; init; }
 
+    /// <summary>
+    /// Returns the display name.
+    /// </summary>
     public override string ToString() => DisplayName;
 }
 
+/// <summary>
+/// ViewModel for the main application window.
+/// Manages the task list, commands, and window state.
+/// </summary>
 public sealed partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly AppSettings _settings;
@@ -31,22 +49,47 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private bool _blinkOn;
     private bool _disposed;
 
+    /// <summary>
+    /// Gets the collection of task items.
+    /// </summary>
     public ObservableCollection<TaskItemViewModel> Tasks { get; } = new();
+
+    /// <summary>
+    /// Gets the collection of category filters.
+    /// </summary>
     public ObservableCollection<CategoryFilter> CategoryFilters { get; } = new();
 
+    /// <summary>
+    /// Gets or sets the selected category filter.
+    /// </summary>
     [ObservableProperty]
     private CategoryFilter? selectedCategoryFilter;
 
+    /// <summary>
+    /// Gets or sets the selected task.
+    /// </summary>
     [ObservableProperty]
     private TaskItemViewModel? selectedTask;
 
+    /// <summary>
+    /// Gets or sets whether completed tasks are shown.
+    /// </summary>
     [ObservableProperty]
     private bool showCompleted;
 
+    /// <summary>
+    /// Gets whether there are any tasks.
+    /// </summary>
     public bool HasTasks => Tasks.Count > 0;
 
+    /// <summary>
+    /// Gets whether there are no tasks.
+    /// </summary>
     public bool NoTasks => Tasks.Count == 0;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainViewModel"/> class.
+    /// </summary>
     public MainViewModel(AppDatabase db, AppSettings settings, ThemeService themes, AlarmEngine alarmEngine)
     {
         _db = db;
@@ -74,6 +117,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     partial void OnSelectedCategoryFilterChanged(CategoryFilter? value) => RefreshList();
 
+    /// <summary>
+    /// Refreshes the category filter list.
+    /// </summary>
     public void RefreshCategories()
     {
         var selectedId = SelectedCategoryFilter?.CategoryId;
@@ -84,7 +130,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         }
 
         CategoryFilters.Clear();
-        CategoryFilters.Add(new CategoryFilter { DisplayName = "Toutes", CategoryId = null });
+        CategoryFilters.Add(new CategoryFilter { DisplayName = LocalizationService.Instance["ShowAllCategories"], CategoryId = null });
         foreach (var cat in _categoryNames.OrderBy(kv => kv.Value, StringComparer.CurrentCultureIgnoreCase))
         {
             CategoryFilters.Add(new CategoryFilter { DisplayName = cat.Value, CategoryId = cat.Key });
@@ -93,6 +139,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         SelectedCategoryFilter = CategoryFilters.FirstOrDefault(f => f.CategoryId == selectedId) ?? CategoryFilters[0];
     }
 
+    /// <summary>
+    /// Refreshes the task list.
+    /// </summary>
     public void RefreshList()
     {
         IEnumerable<PlannerTask> query = _db.GetTasks();
@@ -122,6 +171,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         UpdateBlinkTimer();
     }
 
+    /// <summary>
+    /// Refreshes the deadline display for all tasks.
+    /// </summary>
     public void RefreshDeadlines()
     {
         foreach (var item in Tasks)
@@ -132,6 +184,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         UpdateBlinkTimer();
     }
 
+    /// <summary>
+    /// Changes the database location.
+    /// </summary>
     public void ChangeDatabase(string path)
     {
         _db = new AppDatabase(path);
@@ -143,9 +198,15 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     // ----- Commands -----
 
+    /// <summary>
+    /// Shows the task editor to create a new task.
+    /// </summary>
     [RelayCommand]
     private void AddTask() => ShowEditor(null);
 
+    /// <summary>
+    /// Shows the task editor for the specified task.
+    /// </summary>
     [RelayCommand]
     private void EditTask(TaskItemViewModel? item)
     {
@@ -155,9 +216,15 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>
+    /// Shows the task editor for the selected task.
+    /// </summary>
     [RelayCommand]
     private void EditSelectedTask() => ShowEditor(SelectedTask?.Task);
 
+    /// <summary>
+    /// Deletes the specified task after confirmation.
+    /// </summary>
     [RelayCommand]
     private void DeleteTask(TaskItemViewModel? item)
     {
@@ -166,9 +233,10 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
+        var message = string.Format(LocalizationService.Instance["ConfirmDeleteTask"], item.Title);
         var result = MessageBox.Show(
-            $"Supprimer la tâche « {item.Title} » ?",
-            "OD.Planner",
+            message,
+            LocalizationService.Instance["AppTitle"],
             MessageBoxButton.YesNo,
             MessageBoxImage.Warning,
             MessageBoxResult.No);
@@ -179,9 +247,15 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>
+    /// Deletes the selected task.
+    /// </summary>
     [RelayCommand]
     private void DeleteSelectedTask() => DeleteTask(SelectedTask);
 
+    /// <summary>
+    /// Toggles the completed state of the specified task.
+    /// </summary>
     [RelayCommand]
     private void ToggleCompleted(TaskItemViewModel? item)
     {
@@ -199,11 +273,17 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     private bool CanAddOneDay(TaskItemViewModel? item) => item?.Task.DeadlineType != DeadlineType.None;
 
+    /// <summary>
+    /// Adds one day to the task deadline.
+    /// </summary>
     [RelayCommand(CanExecute = nameof(CanAddOneDay))]
     private void AddOneDay(TaskItemViewModel? item) => ShiftDeadline(item, 1);
 
     private bool CanAddOneWeek(TaskItemViewModel? item) => item?.Task.DeadlineType != DeadlineType.None;
 
+    /// <summary>
+    /// Adds one week to the task deadline.
+    /// </summary>
     [RelayCommand(CanExecute = nameof(CanAddOneWeek))]
     private void AddOneWeek(TaskItemViewModel? item) => ShiftDeadline(item, 7);
 
@@ -231,6 +311,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         RefreshList();
     }
 
+    /// <summary>
+    /// Opens the settings dialog.
+    /// </summary>
     [RelayCommand]
     private void OpenSettings()
     {
@@ -309,6 +392,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes the view model and unsubscribes from events.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)

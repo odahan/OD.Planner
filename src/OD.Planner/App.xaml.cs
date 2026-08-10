@@ -1,19 +1,35 @@
-﻿using System.Windows;
+﻿using System.Globalization;
+using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 using OD.Planner.Data;
+using OD.Planner.Localization;
 using OD.Planner.Services;
 using OD.Planner.ViewModels;
 using OD.Planner.Views;
 
 namespace OD.Planner;
 
+/// <summary>
+/// The main application class for OD.Planner.
+/// Handles startup, shutdown, and global services.
+/// </summary>
 public partial class App : Application
 {
+    /// <summary>
+    /// Gets the current application instance.
+    /// </summary>
     public static new App Current => (App)Application.Current;
 
+    /// <summary>
+    /// Gets the application settings.
+    /// </summary>
     public AppSettings Settings { get; private set; } = new();
+
+    /// <summary>
+    /// Gets the theme service for managing light/dark themes.
+    /// </summary>
     public ThemeService Themes { get; } = new();
 
     private AppDatabase? _db;
@@ -21,6 +37,10 @@ public partial class App : Application
     private AlarmEngine? _alarmEngine;
     private MainViewModel? _mainViewModel;
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Application.Startup"/> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.StartupEventArgs"/> that contains the data for the event.</param>
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -31,6 +51,8 @@ public partial class App : Application
         Settings = SettingsService.Load();
         Themes.Apply(Settings.IsDarkTheme);
         StartupService.SetEnabled(Settings.AutoStartEnabled);
+
+        ApplyLanguage(Settings.Language);
 
         if (string.IsNullOrWhiteSpace(Settings.DbPath))
         {
@@ -66,16 +88,52 @@ public partial class App : Application
         _alarmEngine.Start();
     }
 
+    /// <summary>
+    /// Applies the specified language to the application resources.
+    /// </summary>
+    /// <param name="language">The language code (e.g., "en" or "fr").</param>
+    public void ApplyLanguage(string? language)
+    {
+        var culture = new CultureInfo(language ?? "fr");
+        LocalizationService.Instance.CurrentCulture = culture;
+
+        var dicts = Current.Resources.MergedDictionaries;
+        var newDict = new ResourceDictionary
+        {
+            Source = new Uri($"Localization/Strings.{culture.Name}.xaml", UriKind.Relative)
+        };
+
+        // Replace the language dictionary in place to maintain DynamicResource links
+        for (var i = 0; i < dicts.Count; i++)
+        {
+            if (dicts[i].Source != null &&
+                dicts[i].Source.OriginalString.StartsWith("Localization/Strings."))
+            {
+                dicts[i] = newDict;
+                return;
+            }
+        }
+
+        dicts.Add(newDict);
+    }
+
+    /// <summary>
+    /// Handles unhandled exceptions on the dispatcher thread.
+    /// </summary>
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         MessageBox.Show(
-            $"Une erreur est survenue :\n{e.Exception.Message}",
-            "OD.Planner",
+            string.Format(LocalizationService.Instance["ErrorOccurred"], e.Exception.Message),
+            LocalizationService.Instance["ErrorTitle"],
             MessageBoxButton.OK,
             MessageBoxImage.Error);
         e.Handled = true;
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Application.Exit"/> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.Windows.ExitEventArgs"/> that contains the event data.</param>
     protected override void OnExit(ExitEventArgs e)
     {
         _alarmEngine?.Dispose();

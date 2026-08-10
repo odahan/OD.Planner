@@ -5,11 +5,16 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Data.Sqlite;
 using OD.Planner.Data;
+using OD.Planner.Localization;
 using OD.Planner.Models;
 using OD.Planner.Services;
 
 namespace OD.Planner.ViewModels;
 
+/// <summary>
+/// ViewModel for the Settings dialog.
+/// Manages application settings including theme, alarms, categories, database, and language.
+/// </summary>
 public sealed partial class SettingsViewModel : ObservableObject
 {
     private readonly AppSettings _settings;
@@ -19,49 +24,135 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly Action<bool> _onShowCompletedChanged;
     private readonly Action _onCategoriesChanged;
 
+    /// <summary>
+    /// Gets the collection of task categories.
+    /// </summary>
     public ObservableCollection<Category> Categories { get; } = new();
 
+    /// <summary>
+    /// Gets or sets the currently selected category.
+    /// </summary>
     [ObservableProperty]
     private Category? selectedCategory;
 
+    /// <summary>
+    /// Gets or sets the new category name for add/rename operations.
+    /// </summary>
     [ObservableProperty]
     private string newCategoryName = string.Empty;
 
+    /// <summary>
+    /// Gets or sets whether the category input is in rename mode.
+    /// </summary>
     [ObservableProperty]
     private bool isRenameMode;
 
+    /// <summary>
+    /// Gets or sets the category error message.
+    /// </summary>
     [ObservableProperty]
     private string? categoryError;
 
+    /// <summary>
+    /// Gets or sets whether the dark theme is enabled.
+    /// </summary>
     [ObservableProperty]
     private bool isDarkTheme;
 
+    /// <summary>
+    /// Gets or sets whether completed tasks are shown.
+    /// </summary>
     [ObservableProperty]
     private bool showCompleted;
 
+    /// <summary>
+    /// Gets or sets whether the application starts with Windows.
+    /// </summary>
     [ObservableProperty]
     private bool autoStart;
 
+    /// <summary>
+    /// Gets or sets whether sound is enabled for alarms.
+    /// </summary>
     [ObservableProperty]
     private bool soundEnabled;
 
+    /// <summary>
+    /// Gets or sets whether the J-1 (day before) alarm is enabled.
+    /// </summary>
     [ObservableProperty]
     private bool j1Enabled;
 
+    /// <summary>
+    /// Gets or sets whether the J0 (due day) alarm is enabled.
+    /// </summary>
     [ObservableProperty]
     private bool j0Enabled;
 
+    /// <summary>
+    /// Gets or sets whether the overdue alarm is enabled.
+    /// </summary>
     [ObservableProperty]
     private bool overdueEnabled;
 
+    /// <summary>
+    /// Gets or sets whether animations are reduced for accessibility.
+    /// </summary>
     [ObservableProperty]
     private bool reduceAnimations;
 
+    /// <summary>
+    /// Gets or sets the database file path.
+    /// </summary>
     [ObservableProperty]
     private string dbPath = string.Empty;
 
+    /// <summary>
+    /// Gets the application version string.
+    /// </summary>
     public string AppVersion => $"v{Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.0"}";
 
+    /// <summary>
+    /// Gets whether English language is selected.
+    /// </summary>
+    public bool IsEnglishLanguage
+    {
+        get => _settings.Language == "en";
+        set
+        {
+            if (value)
+            {
+                _settings.Language = "en";
+                SettingsService.Save(_settings);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsFrenchLanguage));
+                ApplyLanguage("en");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets whether French language is selected.
+    /// </summary>
+    public bool IsFrenchLanguage
+    {
+        get => _settings.Language == "fr";
+        set
+        {
+            if (value)
+            {
+                _settings.Language = "fr";
+                SettingsService.Save(_settings);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsEnglishLanguage));
+                ApplyLanguage("fr");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
+    /// </summary>
     public SettingsViewModel(
         AppSettings settings,
         AppDatabase db,
@@ -90,6 +181,18 @@ public sealed partial class SettingsViewModel : ObservableObject
         ReloadCategories();
     }
 
+    /// <summary>
+    /// Applies the specified language to the application.
+    /// </summary>
+    /// <param name="language">The language code ("en" or "fr").</param>
+    private void ApplyLanguage(string language)
+    {
+        if (Application.Current is App app)
+        {
+            app.ApplyLanguage(language);
+        }
+    }
+
     partial void OnIsDarkThemeChanged(bool value)
     {
         _settings.IsDarkTheme = value;
@@ -104,7 +207,6 @@ public sealed partial class SettingsViewModel : ObservableObject
         _settings.AutoStartEnabled = value;
         if (!StartupService.SetEnabled(value))
         {
-            // Failed to write to registry - revert the setting
             _settings.AutoStartEnabled = !value;
             OnPropertyChanged(nameof(AutoStart));
         }
@@ -143,6 +245,9 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     // ----- Categories -----
 
+    /// <summary>
+    /// Adds a new category or renames the selected category.
+    /// </summary>
     [RelayCommand]
     private void AddCategory()
     {
@@ -176,8 +281,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         }
         catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
         {
-            // SQLITE_CONSTRAINT (19) = UNIQUE constraint failed
-            CategoryError = "Une catégorie de ce nom existe déjà.";
+            CategoryError = LocalizationService.Instance["CategoryExists"];
         }
         catch (Exception ex)
         {
@@ -185,6 +289,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Begins the rename mode for the selected category.
+    /// </summary>
     [RelayCommand]
     private void BeginRename()
     {
@@ -198,6 +305,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         IsRenameMode = true;
     }
 
+    /// <summary>
+    /// Cancels the rename mode.
+    /// </summary>
     [RelayCommand]
     private void CancelRename()
     {
@@ -206,6 +316,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         CategoryError = null;
     }
 
+    /// <summary>
+    /// Deletes the selected category after confirmation.
+    /// </summary>
     [RelayCommand]
     private void DeleteCategory()
     {
@@ -214,9 +327,10 @@ public sealed partial class SettingsViewModel : ObservableObject
             return;
         }
 
+        var message = string.Format(LocalizationService.Instance["ConfirmDeleteCategory"], SelectedCategory.Name);
         var result = MessageBox.Show(
-            $"Supprimer la catégorie « {SelectedCategory.Name} » ?\nLes tâches associées seront déplacées en « sans catégorie ».",
-            "OD.Planner",
+            message,
+            LocalizationService.Instance["AppTitle"],
             MessageBoxButton.YesNo,
             MessageBoxImage.Warning,
             MessageBoxResult.No);
@@ -232,6 +346,10 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     // ----- Database -----
 
+    /// <summary>
+    /// Changes the database file path.
+    /// </summary>
+    /// <param name="path">The new database file path.</param>
     public void ChangeDatabase(string path)
     {
         _settings.DbPath = path;
@@ -241,6 +359,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         ReloadCategories();
     }
 
+    /// <summary>
+    /// Reloads the categories from the database.
+    /// </summary>
     private void ReloadCategories()
     {
         Categories.Clear();

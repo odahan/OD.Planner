@@ -1,6 +1,7 @@
 <Window x:Class="OD.Planner.Views.FirstRunDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:OD.Planner.Localization"
         Width="480" SizeToContent="Height"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
         ShowInTaskbar="False" WindowStartupLocation="CenterScreen"
@@ -20,7 +21,7 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="&#xE8F7;" FontFamily="{StaticResource IconFontFamily}" FontSize="16"
                                Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                    <TextBlock Text="Bienvenue dans OD.Planner" Style="{StaticResource TitleTextStyle}"
+                    <TextBlock Text="{loc:Loc WelcomeTitle}" Style="{StaticResource TitleTextStyle}"
                                Margin="10,0,0,0" VerticalAlignment="Center" />
                 </StackPanel>
                 <Button Style="{StaticResource WindowCloseButtonStyle}" Content="&#xE8BB;"
@@ -29,9 +30,9 @@
 
             <!-- Body -->
             <StackPanel Grid.Row="1" Margin="0,14,0,0">
-                <TextBlock Text="Vos tâches seront stockées dans une base de données SQLite."
+                <TextBlock Text="{loc:Loc FirstRunDescription}"
                            Style="{StaticResource BodyTextStyle}" TextWrapping="Wrap" />
-                <TextBlock Text="Choisissez où la créer (le dossier de l'application est proposé par défaut) :"
+                <TextBlock Text="{loc:Loc ChooseDbLocation}"
                            Style="{StaticResource CaptionTextStyle}" Margin="0,6,0,0" TextWrapping="Wrap" />
 
                 <Grid Margin="0,12,0,0">
@@ -42,25 +43,25 @@
                     </Grid.ColumnDefinitions>
                     <TextBox Grid.Column="0" Style="{StaticResource TextBoxBaseStyle}"
                              Text="{Binding DbPath, UpdateSourceTrigger=PropertyChanged}" />
-                    <Button Grid.Column="2" Style="{StaticResource SecondaryButtonStyle}" Content="Parcourir…"
+                    <Button Grid.Column="2" Style="{StaticResource SecondaryButtonStyle}" Content="{loc:Loc Browse}"
                             Click="Browse_Click" />
                 </Grid>
 
-                 <TextBlock Text="{Binding Error}" Style="{StaticResource BodyTextStyle}"
-                            Foreground="{DynamicResource OverdueForeground}" Margin="0,8,0,0" TextWrapping="Wrap"
-                            Visibility="{Binding Error, Converter={StaticResource EmptyToCollapsed}}" />
-                 <TextBlock Text="Une base de données existe déjà à cet emplacement. Elle sera réutilisée."
-                            Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap"
-                            Foreground="{DynamicResource TextSecondaryBrush}"
-                            Visibility="{Binding DbExists, Converter={StaticResource BoolToVisible}}" />
-             </StackPanel>
+                <TextBlock Text="{Binding Error}" Style="{StaticResource BodyTextStyle}"
+                           Foreground="{DynamicResource OverdueForeground}" Margin="0,8,0,0" TextWrapping="Wrap"
+                           Visibility="{Binding Error, Converter={StaticResource EmptyToCollapsed}}" />
+                <TextBlock Text="{loc:Loc DbExistsWarning}"
+                           Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           Visibility="{Binding DbExists, Converter={StaticResource BoolToVisible}}" />
+            </StackPanel>
 
             <!-- Footer -->
             <Grid Grid.Row="2" Margin="0,20,0,0">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource SecondaryButtonStyle}" Content="Quitter" Margin="0,0,10,0"
+                    <Button Style="{StaticResource SecondaryButtonStyle}" Content="{loc:Loc Quit}" Margin="0,0,10,0"
                             Click="CloseWindow_Click" />
-                    <Button Style="{StaticResource PrimaryButtonStyle}" Content="Créer" Click="Create_Click" />
+                    <Button Style="{StaticResource PrimaryButtonStyle}" Content="{loc:Loc Create}" Click="Create_Click" />
                 </StackPanel>
             </Grid>
         </Grid>

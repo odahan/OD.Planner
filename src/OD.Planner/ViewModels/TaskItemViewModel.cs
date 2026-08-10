@@ -1,11 +1,16 @@
 using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
+using OD.Planner.Localization;
 using OD.Planner.Logic;
 using OD.Planner.Models;
 
 namespace OD.Planner.ViewModels;
 
+/// <summary>
+/// ViewModel for individual task items in the main window list.
+/// Displays task information including title, priority, deadline, and category.
+/// </summary>
 public sealed partial class TaskItemViewModel : ObservableObject
 {
     private readonly string? _categoryName;
@@ -26,6 +31,9 @@ public sealed partial class TaskItemViewModel : ObservableObject
     // This avoids repeated Application.Current.TryFindResource calls on every Refresh.
     private static readonly BrushCache Cache = new();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TaskItemViewModel"/> class.
+    /// </summary>
     public TaskItemViewModel(PlannerTask task, string? categoryName)
     {
         Task = task;
@@ -33,32 +41,74 @@ public sealed partial class TaskItemViewModel : ObservableObject
         Refresh();
     }
 
+    /// <summary>
+    /// Gets the underlying task model.
+    /// </summary>
     public PlannerTask Task { get; }
 
+    /// <summary>
+    /// Gets the task title.
+    /// </summary>
     public string Title => Task.Title;
 
+    /// <summary>
+    /// Gets whether the task is completed.
+    /// </summary>
     public bool IsCompleted => Task.IsCompleted;
 
+    /// <summary>
+    /// Gets the category label.
+    /// </summary>
     public string CategoryLabel => _categoryLabel;
 
+    /// <summary>
+    /// Gets whether the task has a category.
+    /// </summary>
     public bool HasCategory => _hasCategory;
 
+    /// <summary>
+    /// Gets the priority label.
+    /// </summary>
     public string PriorityLabel => _priorityLabel;
 
+    /// <summary>
+    /// Gets the priority background brush.
+    /// </summary>
     public Brush? PriorityBackground => _priorityBackground;
 
+    /// <summary>
+    /// Gets the priority foreground brush.
+    /// </summary>
     public Brush? PriorityForeground => _priorityForeground;
 
+    /// <summary>
+    /// Gets the deadline display text.
+    /// </summary>
     public string DeadlineText => _deadlineText;
 
+    /// <summary>
+    /// Gets whether the deadline is visible.
+    /// </summary>
     public bool DeadlineVisible => _deadlineVisible;
 
+    /// <summary>
+    /// Gets the deadline foreground brush.
+    /// </summary>
     public Brush? DeadlineForeground => _deadlineForeground;
 
+    /// <summary>
+    /// Gets the deadline background brush.
+    /// </summary>
     public Brush? DeadlineBackground => _deadlineBackground;
 
+    /// <summary>
+    /// Gets whether the task should blink (overdue or very urgent).
+    /// </summary>
     public bool IsBlinking => _isBlinking;
 
+    /// <summary>
+    /// Gets or sets whether the blink animation is currently visible.
+    /// </summary>
     public bool BlinkOn
     {
         get => _blinkOn;
@@ -74,8 +124,14 @@ public sealed partial class TaskItemViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Gets the glow brush for blinking tasks.
+    /// </summary>
     public Brush? GlowBrush => _glowBrush;
 
+    /// <summary>
+    /// Refreshes the display properties from the task model.
+    /// </summary>
     public void Refresh()
     {
         var today = DateTime.Today;
@@ -86,6 +142,9 @@ public sealed partial class TaskItemViewModel : ObservableObject
             days = (int)(deadline.Value.Date - today.Date).TotalDays;
         }
 
+        var loc = LocalizationService.Instance;
+        var daysSuffix = loc["DaysSuffix"];
+
         if (!deadline.HasValue)
         {
             _deadlineText = string.Empty;
@@ -95,21 +154,21 @@ public sealed partial class TaskItemViewModel : ObservableObject
         }
         else if (days < 0)
         {
-            _deadlineText = $"{days}j";
+            _deadlineText = $"{days}{daysSuffix}";
             _deadlineVisible = true;
             _deadlineForeground = Cache.Get("OverdueForeground");
             _deadlineBackground = Cache.Get("OverdueBackground");
         }
         else if (days == 0)
         {
-            _deadlineText = "Aujourd'hui";
+            _deadlineText = loc["Today"];
             _deadlineVisible = true;
             _deadlineForeground = Cache.Get("DueTodayForeground");
             _deadlineBackground = Cache.Get("DueTodayBackground");
         }
         else
         {
-            _deadlineText = $"{days}j";
+            _deadlineText = $"{days}{daysSuffix}";
             _deadlineVisible = true;
             _deadlineForeground = Cache.Get("TextSecondaryBrush");
             _deadlineBackground = Cache.Get("SurfaceAltBrush");
@@ -117,10 +176,10 @@ public sealed partial class TaskItemViewModel : ObservableObject
 
         _priorityLabel = Task.Priority switch
         {
-            Priority.Low => "Faible",
-            Priority.Medium => "Moyenne",
-            Priority.Urgent => "Urgente",
-            _ => "Très urgente",
+            Priority.Low => loc["PriorityLow"],
+            Priority.Medium => loc["PriorityMedium"],
+            Priority.Urgent => loc["PriorityUrgent"],
+            _ => loc["PriorityVeryUrgent"],
         };
 
         (_priorityBackground, _priorityForeground) = Task.Priority switch

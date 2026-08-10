@@ -1,6 +1,7 @@
 <Window x:Class="OD.Planner.Views.SettingsDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:OD.Planner.Localization"
         Width="480" Height="640" MinWidth="380" MinHeight="480"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize"
         ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
@@ -8,145 +9,166 @@
 
     <Border CornerRadius="10" Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" ClipToBounds="True">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <ScrollViewer.Resources>
-                <Style TargetType="ScrollBar" BasedOn="{StaticResource CompactScrollBarStyle}" />
-            </ScrollViewer.Resources>
-        <Grid Margin="20,12,20,16">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Header -->
-            <Grid MouseLeftButtonDown="Header_MouseLeftButtonDown">
-                <TextBlock Text="Paramètres" Style="{StaticResource TitleTextStyle}" VerticalAlignment="Center" />
-                <Button Style="{StaticResource WindowCloseButtonStyle}" Content="&#xE8BB;"
-                        HorizontalAlignment="Right" VerticalAlignment="Top" Click="CloseWindow_Click" />
+            <!-- Header (fixed, not scrolling) -->
+            <Grid Grid.Row="0" MouseLeftButtonDown="Header_MouseLeftButtonDown"
+                  Background="{DynamicResource SurfaceBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{loc:Loc SettingsTitle}" Style="{StaticResource TitleTextStyle}"
+                           VerticalAlignment="Center" Margin="20,14,0,14" />
+                <Button Grid.Column="1" Style="{StaticResource PrimaryButtonStyle}" Content="{loc:Loc Close}"
+                        Click="CloseWindow_Click" Margin="0,0,14,0" VerticalAlignment="Center" />
             </Grid>
 
-            <!-- Apparence -->
-            <StackPanel Grid.Row="1" Margin="0,10,0,0">
-                <TextBlock Text="APPARENCE" Style="{StaticResource SectionHeaderTextStyle}" />
-                <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="Thème sombre"
-                          IsChecked="{Binding IsDarkTheme}"
-                          AutomationProperties.AutomationId="ThemeToggle" />
-                <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="Afficher les tâches terminées"
-                          IsChecked="{Binding ShowCompleted}" />
-                <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="Réduire les animations (clignotement)"
-                          IsChecked="{Binding ReduceAnimations}" />
-            </StackPanel>
+            <!-- Scrollable content -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer.Resources>
+                    <Style TargetType="ScrollBar" BasedOn="{StaticResource CompactScrollBarStyle}" />
+                </ScrollViewer.Resources>
+                <Grid Margin="20,12,20,16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-            <!-- Sons -->
-            <StackPanel Grid.Row="2" Margin="0,14,0,0">
-                <TextBlock Text="ALARMES SONORES" Style="{StaticResource SectionHeaderTextStyle}" />
-                <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="Activer les alarmes sonores"
-                          IsChecked="{Binding SoundEnabled}" />
-                <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="Alerte la veille de l'échéance (J-1)"
-                          IsChecked="{Binding J1Enabled}" />
-                <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="Alerte le jour de l'échéance (J0)"
-                          IsChecked="{Binding J0Enabled}" />
-                <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="Alarme quand l'échéance est dépassée"
-                          IsChecked="{Binding OverdueEnabled}" />
-            </StackPanel>
-
-            <!-- Système -->
-            <StackPanel Grid.Row="3" Margin="0,14,0,0">
-                <TextBlock Text="SYSTÈME" Style="{StaticResource SectionHeaderTextStyle}" />
-                <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="Démarrer au lancement de Windows"
-                          IsChecked="{Binding AutoStart}" />
-            </StackPanel>
-
-            <!-- Catégories -->
-            <StackPanel Grid.Row="4" Margin="0,14,0,0">
-                <TextBlock Text="CATÉGORIES" Style="{StaticResource SectionHeaderTextStyle}" />
-                <Grid Margin="0,6,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="8" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Style="{StaticResource TextBoxBaseStyle}"
-                             Text="{Binding NewCategoryName, UpdateSourceTrigger=PropertyChanged}"
-                             ToolTip="Nouvelle catégorie, ou nouveau nom en mode renommage" />
-                    <Button Grid.Column="2" Style="{StaticResource PrimaryButtonStyle}" Content="Ajouter"
-                            Command="{Binding AddCategoryCommand}"
-                            Visibility="{Binding IsRenameMode, Converter={StaticResource BoolToCollapsed}}" />
-                    <Button Grid.Column="2" Style="{StaticResource PrimaryButtonStyle}" Content="Enregistrer"
-                            Command="{Binding AddCategoryCommand}"
-                            Visibility="{Binding IsRenameMode, Converter={StaticResource BoolToVisible}}" />
-                    <Button Grid.Column="3" Style="{StaticResource SecondaryButtonStyle}" Content="Annuler"
-                            Command="{Binding CancelRenameCommand}" Margin="8,0,0,0"
-                            Visibility="{Binding IsRenameMode, Converter={StaticResource BoolToVisible}}" />
-                </Grid>
-
-                <Grid Margin="0,6,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="8" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <ListBox Grid.Column="0" ItemsSource="{Binding Categories}"
-                             SelectedItem="{Binding SelectedCategory}" Height="110"
-                             ItemContainerStyle="{StaticResource TaskRowContainerStyle}"
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                             Background="Transparent" BorderThickness="0">
-                        <ListBox.Resources>
-                            <Style TargetType="ScrollBar" BasedOn="{StaticResource CompactScrollBarStyle}" />
-                        </ListBox.Resources>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" Style="{StaticResource BodyTextStyle}" Margin="8,4" />
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                    <StackPanel Grid.Column="2" VerticalAlignment="Top">
-                        <Button Style="{StaticResource GhostButtonStyle}" Content="Renommer"
-                                Command="{Binding BeginRenameCommand}" MinWidth="80" />
-                        <Button Style="{StaticResource GhostButtonStyle}" Content="Supprimer"
-                                Command="{Binding DeleteCategoryCommand}" MinWidth="80" Margin="0,4,0,0" />
+                    <!-- Appearance -->
+                    <StackPanel Grid.Row="0" Margin="0,10,0,0">
+                        <TextBlock Text="{loc:Loc Appearance}" Style="{StaticResource SectionHeaderTextStyle}" />
+                        <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc DarkTheme}"
+                                  IsChecked="{Binding IsDarkTheme}"
+                                  AutomationProperties.AutomationId="ThemeToggle" />
+                        <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc ShowCompletedTasks}"
+                                  IsChecked="{Binding ShowCompleted}" />
+                        <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc ReduceAnimations}"
+                                  IsChecked="{Binding ReduceAnimations}" />
                     </StackPanel>
-                </Grid>
-                <TextBlock Text="{Binding CategoryError}" Style="{StaticResource BodyTextStyle}"
-                           Foreground="{DynamicResource OverdueForeground}" Margin="0,6,0,0" TextWrapping="Wrap"
-                           Visibility="{Binding CategoryError, Converter={StaticResource EmptyToCollapsed}}" />
-            </StackPanel>
 
-            <!-- Base de données -->
-            <StackPanel Grid.Row="5" Margin="0,14,0,0">
-                <TextBlock Text="BASE DE DONNÉES" Style="{StaticResource SectionHeaderTextStyle}" />
-                <Grid Margin="0,6,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="8" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Style="{StaticResource BodyTextStyle}" Text="{Binding DbPath}"
-                               TextTrimming="CharacterEllipsis" ToolTip="{Binding DbPath}"
-                               VerticalAlignment="Center" />
-                    <Button Grid.Column="2" Style="{StaticResource SecondaryButtonStyle}" Content="Changer…"
-                            Click="ChangeDb_Click" />
-                </Grid>
-                <TextBlock Text="Le fichier tasks.db sera créé dans le dossier choisi."
-                           Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0" />
-            </StackPanel>
+                    <!-- Sound Alarms -->
+                    <StackPanel Grid.Row="1" Margin="0,14,0,0">
+                        <TextBlock Text="{loc:Loc SoundAlarms}" Style="{StaticResource SectionHeaderTextStyle}" />
+                        <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc EnableSoundAlarms}"
+                                  IsChecked="{Binding SoundEnabled}" />
+                        <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc J1Alert}"
+                                  IsChecked="{Binding J1Enabled}" />
+                        <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc J0Alert}"
+                                  IsChecked="{Binding J0Enabled}" />
+                        <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc OverdueAlert}"
+                                  IsChecked="{Binding OverdueEnabled}" />
+                    </StackPanel>
 
-            <!-- Footer -->
-            <StackPanel Grid.Row="6" Margin="0,18,0,0">
-                <TextBlock Style="{StaticResource CaptionTextStyle}" HorizontalAlignment="Center"
-                           Foreground="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,8">
-                    <Run Text="{Binding AppVersion, StringFormat='OD.Planner {0} - © 2026 Olivier Dahan', Mode=OneWay}" />
-                </TextBlock>
-                <Button Style="{StaticResource PrimaryButtonStyle}" Content="Fermer" Click="CloseWindow_Click"
-                        HorizontalAlignment="Right" />
-            </StackPanel>
+                    <!-- System -->
+                    <StackPanel Grid.Row="2" Margin="0,14,0,0">
+                        <TextBlock Text="{loc:Loc SystemSection}" Style="{StaticResource SectionHeaderTextStyle}" />
+                        <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc StartWithWindows}"
+                                  IsChecked="{Binding AutoStart}" />
+                    </StackPanel>
+
+                    <!-- Language -->
+                    <StackPanel Grid.Row="3" Margin="0,14,0,0">
+                        <TextBlock Text="{loc:Loc LanguageSection}" Style="{StaticResource SectionHeaderTextStyle}" />
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton Style="{StaticResource RadioButtonStyle}" Content="{loc:Loc LanguageEnglish}"
+                                         IsChecked="{Binding IsEnglishLanguage}" Margin="0,5,20,5" />
+                            <RadioButton Style="{StaticResource RadioButtonStyle}" Content="{loc:Loc LanguageFrench}"
+                                         IsChecked="{Binding IsFrenchLanguage}" Margin="0,5,0,5" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Categories -->
+                    <StackPanel Grid.Row="4" Margin="0,14,0,0">
+                        <TextBlock Text="{loc:Loc CategoriesSection}" Style="{StaticResource SectionHeaderTextStyle}" />
+                        <Grid Margin="0,6,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Style="{StaticResource TextBoxBaseStyle}"
+                                     Text="{Binding NewCategoryName, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="{loc:Loc NewCategoryPlaceholder}" />
+                            <Button Grid.Column="2" Style="{StaticResource PrimaryButtonStyle}" Content="{loc:Loc Add}"
+                                    Command="{Binding AddCategoryCommand}"
+                                    Visibility="{Binding IsRenameMode, Converter={StaticResource BoolToCollapsed}}" />
+                            <Button Grid.Column="2" Style="{StaticResource PrimaryButtonStyle}" Content="{loc:Loc Save}"
+                                    Command="{Binding AddCategoryCommand}"
+                                    Visibility="{Binding IsRenameMode, Converter={StaticResource BoolToVisible}}" />
+                            <Button Grid.Column="3" Style="{StaticResource SecondaryButtonStyle}" Content="{loc:Loc Cancel}"
+                                    Command="{Binding CancelRenameCommand}" Margin="8,0,0,0"
+                                    Visibility="{Binding IsRenameMode, Converter={StaticResource BoolToVisible}}" />
+                        </Grid>
+
+                        <Grid Margin="0,6,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ListBox Grid.Column="0" ItemsSource="{Binding Categories}"
+                                     SelectedItem="{Binding SelectedCategory}" Height="110"
+                                     ItemContainerStyle="{StaticResource TaskRowContainerStyle}"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     Background="Transparent" BorderThickness="0">
+                                <ListBox.Resources>
+                                    <Style TargetType="ScrollBar" BasedOn="{StaticResource CompactScrollBarStyle}" />
+                                </ListBox.Resources>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" Style="{StaticResource BodyTextStyle}" Margin="8,4" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <StackPanel Grid.Column="2" VerticalAlignment="Top">
+                                <Button Style="{StaticResource GhostButtonStyle}" Content="{loc:Loc Rename}"
+                                        Command="{Binding BeginRenameCommand}" MinWidth="80" />
+                                <Button Style="{StaticResource GhostButtonStyle}" Content="{loc:Loc Delete}"
+                                        Command="{Binding DeleteCategoryCommand}" MinWidth="80" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="{Binding CategoryError}" Style="{StaticResource BodyTextStyle}"
+                                   Foreground="{DynamicResource OverdueForeground}" Margin="0,6,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding CategoryError, Converter={StaticResource EmptyToCollapsed}}" />
+                    </StackPanel>
+
+                    <!-- Database -->
+                    <StackPanel Grid.Row="5" Margin="0,14,0,0">
+                        <TextBlock Text="{loc:Loc DatabaseSection}" Style="{StaticResource SectionHeaderTextStyle}" />
+                        <Grid Margin="0,6,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Style="{StaticResource BodyTextStyle}" Text="{Binding DbPath}"
+                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding DbPath}"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Column="2" Style="{StaticResource SecondaryButtonStyle}" Content="{loc:Loc Browse}"
+                                    Click="ChangeDb_Click" />
+                        </Grid>
+                        <TextBlock Text="{loc:Loc DbFileCreated}"
+                                   Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <!-- Footer -->
+                    <TextBlock Grid.Row="6" Style="{StaticResource CaptionTextStyle}" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource TextTertiaryBrush}" Margin="0,18,0,0"
+                               Text="{Binding AppVersion, StringFormat='OD.Planner {0} - © 2026 Olivier Dahan', Mode=OneWay}" />
+                </Grid>
+            </ScrollViewer>
         </Grid>
-        </ScrollViewer>
     </Border>
 </Window>

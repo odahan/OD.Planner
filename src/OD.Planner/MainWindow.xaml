@@ -1,7 +1,8 @@
 ﻿<Window x:Class="OD.Planner.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="OD.Planner"
+        xmlns:loc="clr-namespace:OD.Planner.Localization"
+        Title="{loc:Loc AppTitle}"
         Width="380" Height="560" MinWidth="300" MinHeight="240"
         WindowStyle="None" ResizeMode="CanResize" AllowsTransparency="True" Background="Transparent"
         UseLayoutRounding="True" SnapsToDevicePixels="True"
@@ -34,13 +35,14 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
                     <TextBlock Text="&#xE8F7;" FontFamily="{StaticResource IconFontFamily}" FontSize="13"
                                Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                    <TextBlock Text="OD.Planner" Style="{StaticResource TitleTextStyle}" Margin="8,0,0,0" />
+                    <TextBlock Text="{loc:Loc AppTitle}" Style="{StaticResource TitleTextStyle}" Margin="8,0,0,0" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button Style="{StaticResource WindowButtonStyle}" Content="&#xE713;"
                             Command="{Binding OpenSettingsCommand}"
-                            AutomationProperties.Name="Paramètres" AutomationProperties.AutomationId="SettingsButton"
-                            ToolTip="Paramètres" />
+                            AutomationProperties.Name="{loc:Loc SettingsTooltip}"
+                            AutomationProperties.AutomationId="SettingsButton"
+                            ToolTip="{loc:Loc SettingsTooltip}" />
                     <Button x:Name="MinimizeButton" Style="{StaticResource WindowButtonStyle}" Content="&#xE921;"
                             Click="Minimize_Click" />
                     <Button x:Name="MaximizeButton" Style="{StaticResource WindowButtonStyle}" Content="&#xE922;"
@@ -61,16 +63,16 @@
                           ItemsSource="{Binding CategoryFilters}"
                           SelectedItem="{Binding SelectedCategoryFilter}"
                           DisplayMemberPath="DisplayName"
-                          ToolTip="Filtrer par catégorie" />
-                <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitchStyle}" Content="Terminées"
+                          ToolTip="{loc:Loc FilterByCategory}" />
+                <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc ShowCompleted}"
                           IsChecked="{Binding ShowCompleted}" Margin="12,0,0,0" VerticalAlignment="Center"
-                          ToolTip="Afficher ou masquer les tâches terminées" />
+                          ToolTip="{loc:Loc ShowCompletedTasks}" />
                 <Button Grid.Column="2" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding AddTaskCommand}"
-                        Margin="12,0,0,0" ToolTip="Nouvelle tâche (Ctrl+N)">
+                        Margin="12,0,0,0" ToolTip="{loc:Loc NewTaskShortcut}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE710;" FontFamily="{StaticResource IconFontFamily}" FontSize="11"
                                    VerticalAlignment="Center" Margin="0,0,6,0" />
-                        <TextBlock Text="Ajouter" />
+                        <TextBlock Text="{loc:Loc AddTask}" />
                     </StackPanel>
                 </Button>
             </Grid>
@@ -102,7 +104,7 @@
                                                   IsChecked="{Binding IsCompleted, Mode=OneWay}"
                                                   Command="{Binding DataContext.ToggleCompletedCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
                                                   CommandParameter="{Binding}" VerticalAlignment="Center"
-                                                  ToolTip="Marquer comme terminée" />
+                                                  ToolTip="{loc:Loc MarkCompletedTooltip}" />
 
                                         <Rectangle Grid.Column="1" Width="4" RadiusX="2" RadiusY="2"
                                                    Fill="{Binding PriorityBackground}" Margin="8,0"
@@ -134,19 +136,19 @@
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Style="{StaticResource GhostButtonStyle}" Content="+1j"
+                                            <Button Style="{StaticResource GhostButtonStyle}" Content="{loc:Loc AddOneDay}"
                                                     Command="{Binding DataContext.AddOneDayCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                    CommandParameter="{Binding}" ToolTip="Repousser d'un jour" />
-                                            <Button Style="{StaticResource GhostButtonStyle}" Content="+1sem"
+                                                    CommandParameter="{Binding}" ToolTip="{loc:Loc PostponeOneDay}" />
+                                            <Button Style="{StaticResource GhostButtonStyle}" Content="{loc:Loc AddOneWeek}"
                                                     Command="{Binding DataContext.AddOneWeekCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                    CommandParameter="{Binding}" ToolTip="Repousser d'une semaine" />
+                                                    CommandParameter="{Binding}" ToolTip="{loc:Loc PostponeOneWeek}" />
                                             <Button Style="{StaticResource IconButtonStyle}" Content="&#xE70F;"
                                                     Command="{Binding DataContext.EditTaskCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                    CommandParameter="{Binding}" ToolTip="Modifier (F2)" />
+                                                    CommandParameter="{Binding}" ToolTip="{loc:Loc EditTaskTooltip}" />
                                             <Button Style="{StaticResource IconButtonStyle}" Content="&#xE74D;"
                                                     Foreground="{DynamicResource TextTertiaryBrush}"
                                                     Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                    CommandParameter="{Binding}" ToolTip="Supprimer" />
+                                                    CommandParameter="{Binding}" ToolTip="{loc:Loc DeleteTaskTooltip}" />
                                         </StackPanel>
                                     </Grid>
 
@@ -163,11 +165,11 @@
                             Visibility="{Binding NoTasks, Converter={StaticResource BoolToVisible}}">
                     <TextBlock Text="&#xE73E;" FontFamily="{StaticResource IconFontFamily}" FontSize="40"
                                Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Aucune tâche" Style="{StaticResource BodyTextStyle}"
+                    <TextBlock Text="{loc:Loc NoTasks}" Style="{StaticResource BodyTextStyle}"
                                Foreground="{DynamicResource TextTertiaryBrush}"
                                HorizontalAlignment="Center" Margin="0,10,0,0" />
                     <Button Style="{StaticResource PrimaryButtonStyle}" Command="{Binding AddTaskCommand}"
-                            Content="Ajouter une tâche" Margin="0,18,0,0" HorizontalAlignment="Center" />
+                            Content="{loc:Loc AddTaskButton}" Margin="0,18,0,0" HorizontalAlignment="Center" />
                 </StackPanel>
             </Grid>
         </Grid>
