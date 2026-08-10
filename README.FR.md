@@ -2,7 +2,7 @@
 
 Un gestionnaire de tâches léger et natif pour Windows, développé avec WPF et .NET. OD.Planner garde votre liste de tâches à portée de main dans une petite fenêtre toujours prête et s'assure que les échéances ne passent pas inaperçues — avec des alarmes sonores et une priorité par code couleur.
 
-![Version](https://img.shields.io/badge/version-1.3.0-blue)
+![Version](https://img.shields.io/badge/version-1.3.5-blue)
 ![License](https://img.shields.io/badge/license-Donationware-green)
 ![.NET](https://img.shields.io/badge/.NET-10.0-purple)
 
@@ -75,7 +75,7 @@ OD.Planner est publié en tant que **donationware**. Voir les fichiers [License.
 
 ## Version
 
-Version actuelle : **1.3.0**
+Version actuelle : **1.3.5**
 
 ## Auteur
 
