@@ -81,16 +81,24 @@ public partial class MainWindow : Window
 
     private void ApplySavedBounds()
     {
-        var work = SystemParameters.WorkArea;
+        // Use virtual screen bounds to support multi-monitor setups.
+        // Virtual screen coordinates span all monitors, with (0,0) at the top-left of the primary monitor.
+        var virtualLeft = SystemParameters.VirtualScreenLeft;
+        var virtualTop = SystemParameters.VirtualScreenTop;
+        var virtualWidth = SystemParameters.VirtualScreenWidth;
+        var virtualHeight = SystemParameters.VirtualScreenHeight;
+        var virtualRight = virtualLeft + virtualWidth;
+        var virtualBottom = virtualTop + virtualHeight;
+
         if (_settings.WindowLeft is double left &&
             _settings.WindowTop is double top &&
             _settings.WindowWidth is double width &&
             _settings.WindowHeight is double height)
         {
-            width = Math.Min(width, work.Width);
-            height = Math.Min(height, work.Height);
-            left = Math.Clamp(left, work.Left, work.Right - width);
-            top = Math.Clamp(top, work.Top, work.Bottom - height);
+            width = Math.Min(width, virtualWidth);
+            height = Math.Min(height, virtualHeight);
+            left = Math.Clamp(left, virtualLeft, virtualRight - width);
+            top = Math.Clamp(top, virtualTop, virtualBottom - height);
             Left = left;
             Top = top;
             Width = width;
@@ -99,6 +107,7 @@ public partial class MainWindow : Window
         else
         {
             // First run: dock the window at the top-right of the primary screen.
+            var work = SystemParameters.WorkArea;
             Width = Math.Min(Width, work.Width);
             Height = Math.Min(Height, work.Height);
             Left = work.Right - Width;
