@@ -32,5 +32,13 @@ et sa maintenance continus.
 Les dons sont entièrement facultatifs et ne sont pas nécessaires pour
 utiliser, modifier ou distribuer ce logiciel.
 
+Si vous souhaitez faire un don, veuillez visiter :
+https://buymeacoffee.com/knhsynths
+
+Vous pouvez également soutenir le projet en le partageant avec d'autres ou
+en contribuant au code sur GitHub.
+
 Pour plus d'informations sur le projet, veuillez visiter :
 https://github.com/odahan/OD.Planner
+
+Auteur : KNHSynths (Olivier Dahan)
