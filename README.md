@@ -70,7 +70,7 @@ Tasks are stored in a SQLite database (`tasks.db`). By default the file is creat
 
 ## License
 
-OD.Planner is released as **donationware**. See the [License.txt](License.txt) file for details. If you find the app useful, a small donation is appreciated.
+OD.Planner is released as **donationware**. See the [License.txt](License.txt) and [License.FR.txt](License.FR.txt) files for details. If you find the app useful, a small donation is appreciated.
 
 ## Version
 

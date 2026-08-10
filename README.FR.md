@@ -70,7 +70,7 @@ Les tâches sont stockées dans une base de données SQLite (`tasks.db`). Par d�
 
 ## Licence
 
-OD.Planner est publié en tant que **donationware**. Voir le fichier [Licence.txt](Licence.txt) pour plus de détails. Si vous trouvez l'application utile, un petit don est apprécié.
+OD.Planner est publié en tant que **donationware**. Voir les fichiers [License.txt](License.txt) et [License.FR.txt](License.FR.txt) pour plus de détails. Si vous trouvez l'application utile, un petit don est apprécié.
 
 ## Version
 
