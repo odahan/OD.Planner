@@ -16,6 +16,7 @@ Un gestionnaire de tâches léger et natif pour Windows, développé avec WPF et
 - **Compatible zone de notification** — minimisez en arrière-plan ; les alarmes et les passages de minuit continuent de fonctionner lorsque l'application est en arrière-plan.
 - **Thèmes sombre et clair** — changez à tout moment ; le choix est mémorisé entre les sessions.
 - **Disposition persistante** — la fenêtre mémorise sa position et sa taille. Au premier lancement, elle s'ancre en haut à droite de l'écran principal.
+- **Interface multilingue** — basculez entre anglais et français instantanément sans redémarrer l'application.
 - **Stockage SQLite** — vos tâches résident dans un fichier `tasks.db` portable que vous pouvez déplacer depuis les paramètres.
 
 ## Prérequis
@@ -55,7 +56,7 @@ L'exécutable est écrit dans `src/OD.Planner/bin/Release/net10.0-windows/win-x6
 - `F2` — modifier la tâche sélectionnée
 - `Delete` — supprimer la tâche sélectionnée
 - Cliquez sur **+1 jour** / **+1 semaine** sur une tâche pour reporter son échéance.
-- Ouvrez les **Paramètres** (icône engrenage) pour configurer le thème, les alarmes, les catégories, le démarrage automatique et l'emplacement de la base de données.
+- Ouvrez les **Paramètres** (icône engrenage) pour configurer le thème, la langue, les alarmes, les catégories, le démarrage automatique et l'emplacement de la base de données.
 
 ## Documentation
 

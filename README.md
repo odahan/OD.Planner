@@ -16,6 +16,7 @@ A lightweight, Windows-native task planner built with WPF and .NET. OD.Planner k
 - **System tray friendly** — minimize to the background; alarms and midnight rollovers keep working while the app is in the background.
 - **Dark & light themes** — switch at any time; the choice is remembered between sessions.
 - **Persistent layout** — the window remembers its position and size. On first launch it docks to the top-right of the primary screen.
+- **Multi-language UI** — switch between English and French instantly without restarting the application.
 - **SQLite storage** — your tasks live in a portable `tasks.db` file that you can relocate from the settings.
 
 ## Requirements
@@ -55,7 +56,7 @@ The executable is written to `src/OD.Planner/bin/Release/net10.0-windows/win-x64
 - `F2` — edit selected task
 - `Delete` — delete selected task
 - Click **+1 day** / **+1 week** on a task to push its deadline back.
-- Open **Settings** (gear icon) to configure theme, alarms, categories, autostart, and the database location.
+- Open **Settings** (gear icon) to configure theme, language, alarms, categories, autostart, and the database location.
 
 ## Documentation
 
