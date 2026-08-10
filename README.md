@@ -2,6 +2,10 @@
 
 A lightweight, Windows-native task planner built with WPF and .NET. OD.Planner keeps your to-do list close at hand in a small, always-ready window and makes sure deadlines don't slip by — with audible alarms and color-coded urgency.
 
+![Version](https://img.shields.io/badge/version-1.3.0-blue)
+![License](https://img.shields.io/badge/license-Donationware-green)
+![.NET](https://img.shields.io/badge/.NET-10.0-purple)
+
 ## Features
 
 - **Task management** — add, edit, reorder, complete and delete tasks from a compact, resizable window.
@@ -53,14 +57,25 @@ The executable is written to `src/OD.Planner/bin/Release/net10.0-windows/win-x64
 - Click **+1 day** / **+1 week** on a task to push its deadline back.
 - Open **Settings** (gear icon) to configure theme, alarms, categories, autostart, and the database location.
 
+## Documentation
+
+User manuals are available in the `docs/` folder:
+
+- [English User Manual](docs/user-manual-en.html)
+- [Manuel d'utilisation (Français)](docs/user-manual-fr.html)
+
 ## Data
 
 Tasks are stored in a SQLite database (`tasks.db`). By default the file is created next to the application; use **Settings → Database → Change…** to pick another location. Settings are saved as `settings.json` next to the application (or under `%LOCALAPPDATA%\OD.Planner` if the app folder is not writable).
 
 ## License
 
-OD.Planner is released as **donationware**. See the [LICENSE](LICENSE) file for details. If you find the app useful, a small donation is appreciated.
+OD.Planner is released as **donationware**. See the [License.txt](License.txt) file for details. If you find the app useful, a small donation is appreciated.
 
 ## Version
 
 Current version: **1.3.0**
+
+## Author
+
+**Olivier Dahan** — [GitHub](https://github.com/odahan)

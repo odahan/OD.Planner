@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OD.Planner - User Manual</title>
+    <style>
+        :root {
+            --bg: #16181D;
+            --surface: #1E2127;
+            --surface-alt: #262A31;
+            --border: #343943;
+            --text: #ECEFF4;
+            --text-secondary: #AEB6C2;
+            --text-tertiary: #6B7482;
+            --accent: #7C83F7;
+            --accent-hover: #949BFA;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 { color: var(--accent); font-size: 2rem; margin-bottom: 0.5rem; }
+        h2 { color: var(--accent); font-size: 1.4rem; margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+        h3 { color: var(--text); font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+        p { margin-bottom: 0.75rem; color: var(--text-secondary); }
+        ul, ol { margin: 0.5rem 0 1rem 1.5rem; color: var(--text-secondary); }
+        li { margin-bottom: 0.3rem; }
+        code {
+            background: var(--surface-alt);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+        .shortcut {
+            display: inline-block;
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.1rem 0.5rem;
+            font-size: 0.85em;
+            margin: 0 0.2rem;
+        }
+        .note {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .note p { margin-bottom: 0; }
+        .header { text-align: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .version { color: var(--text-tertiary); font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.6rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--accent); font-weight: 600; }
+        td { color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>OD.Planner</h1>
+        <p class="version">Version 1.3.0 - User Manual</p>
+    </div>
+
+    <h2>Introduction</h2>
+    <p>OD.Planner is a lightweight, Windows-native task planner built with WPF and .NET. It keeps your to-do list close at hand in a small, always-ready window and makes sure deadlines don't slip by — with audible alarms and color-coded urgency.</p>
+
+    <h2>Getting Started</h2>
+    <h3>First Launch</h3>
+    <p>When you first launch OD.Planner, you'll be asked to choose where to store your tasks database. By default, it's created next to the application executable. You can change this location later in Settings.</p>
+
+    <h3>Main Window</h3>
+    <p>The main window displays your task list with:</p>
+    <ul>
+        <li>A category filter dropdown to show only tasks from a specific category</li>
+        <li>A checkbox to show/hide completed tasks</li>
+        <li>An "Add" button to create new tasks</li>
+    </ul>
+
+    <h2>Task Management</h2>
+    <h3>Creating a Task</h3>
+    <p>Click the <strong>Add</strong> button or press <span class="shortcut">Ctrl+N</strong> to create a new task. You'll be prompted to enter:</p>
+    <ul>
+        <li><strong>Title</strong> - The task description (required)</li>
+        <li><strong>Category</strong> - Optional category for organization</li>
+        <li><strong>Priority</strong> - Low, Medium, Urgent, or Very Urgent</li>
+        <li><strong>Deadline</strong> - None, X days from creation, or a fixed date</li>
+    </ul>
+
+    <h3>Editing a Task</h3>
+    <p>Select a task and press <span class="shortcut">F2</span> or click the edit button to modify it.</p>
+
+    <h3>Completing a Task</h3>
+    <p>Click the checkbox next to a task to mark it as completed. Completed tasks can be hidden using the "Completed" checkbox.</p>
+
+    <h3>Deleting a Task</h3>
+    <p>Click the delete button next to a task. You'll be asked to confirm the deletion.</p>
+
+    <h3>Keyboard Shortcuts</h3>
+    <table>
+        <tr><th>Shortcut</th><th>Action</th></tr>
+        <tr><td><span class="shortcut">Ctrl+N</span></td><td>New task</td></tr>
+        <tr><td><span class="shortcut">F2</span></td><td>Edit selected task</td></tr>
+        <tr><td><span class="shortcut">Delete</span></td><td>Delete selected task</td></tr>
+    </table>
+
+    <h2>Deadlines & Alarms</h2>
+    <h3>Deadline Types</h3>
+    <ul>
+        <li><strong>None</strong> - No deadline for this task</li>
+        <li><strong>Days from creation</strong> - Deadline is X days after the task was created</li>
+        <li><strong>Fixed date</strong> - Deadline is a specific date</li>
+    </ul>
+
+    <h3>Postponing Deadlines</h3>
+    <p>Each task with a deadline shows <strong>+1j</strong> and <strong>+1sem</strong> buttons to postpone the deadline by 1 day or 1 week.</p>
+
+    <h3>Alarm Levels</h3>
+    <table>
+        <tr><th>Level</th><th>Trigger</th><th>Indicator</th></tr>
+        <tr><td>Attention (J-1)</td><td>1 day before deadline</td><td>Yellow chip</td></tr>
+        <tr><td>Due (J0)</td><td>On the deadline date</td><td>Orange chip</td></tr>
+        <tr><td>Overdue</td><td>After the deadline</td><td>Red chip + blinking</td></tr>
+    </table>
+
+    <h3>Alarm Popups</h3>
+    <p>When an alarm triggers, a popup appears with options to:</p>
+    <ul>
+        <li><strong>Snooze 1h</strong> - Silence the alarm for 1 hour</li>
+        <li><strong>Stop</strong> - Dismiss the alarm permanently</li>
+    </ul>
+
+    <h2>Categories</h2>
+    <p>Categories help you organize tasks. You can create, rename, and delete categories in the Settings dialog.</p>
+    <p>Default categories: <strong>Travail</strong> (Work) and <strong>Personnel</strong> (Personal).</p>
+
+    <h2>Settings</h2>
+    <p>Click the gear icon to open Settings. Available options:</p>
+
+    <h3>Appearance</h3>
+    <ul>
+        <li><strong>Dark theme</strong> - Switch between light and dark themes</li>
+        <li><strong>Show completed tasks</strong> - Toggle visibility of completed tasks</li>
+        <li><strong>Reduce animations</strong> - Disable blinking animations for accessibility</li>
+    </ul>
+
+    <h3>Sound Alarms</h3>
+    <ul>
+        <li><strong>Enable sound alarms</strong> - Master switch for all sound alerts</li>
+        <li><strong>J-1 alert</strong> - Sound alert the day before deadline</li>
+        <li><strong>J0 alert</strong> - Sound alert on the deadline day</li>
+        <li><strong>Overdue alert</strong> - Sound alert when overdue</li>
+    </ul>
+
+    <h3>System</h3>
+    <ul>
+        <li><strong>Start with Windows</strong> - Launch OD.Planner at system startup</li>
+    </ul>
+
+    <h3>Database</h3>
+    <p>Change the location of your tasks database file. The application will use the new location after restart.</p>
+
+    <h2>Data Storage</h2>
+    <p>Tasks are stored in a SQLite database (<code>tasks.db</code>). Settings are saved as <code>settings.json</code>. Both files are located next to the application by default, or under <code>%LOCALAPPDATA%\OD.Planner</code> if the app folder is not writable.</p>
+
+    <div class="note">
+        <p><strong>Note:</strong> You can safely copy or move the <code>tasks.db</code> file to backup your tasks or transfer them to another computer.</p>
+    </div>
+
+    <h2>System Tray</h2>
+    <p>OD.Planner minimizes to the system tray. Alarms and midnight rollovers continue to work while the application is in the background.</p>
+
+    <h2>Window Behavior</h2>
+    <ul>
+        <li>The window remembers its position and size between sessions</li>
+        <li>On first launch, it docks to the top-right of the primary screen</li>
+        <li>Double-click the header to maximize/restore</li>
+    </ul>
+
+    <h2>Building from Source</h2>
+    <p>Requirements: Windows 10+, .NET 10 SDK</p>
+    <pre style="background: var(--surface); padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>git clone https://github.com/odahan/OD.Planner.git
+cd OD.Planner
+dotnet build OD.Planner.slnx -c Release</code></pre>
+
+    <h2>License</h2>
+    <p>OD.Planner is released as <strong>donationware</strong>. Free to use, modify, and distribute. If you find it useful, a small donation is appreciated.</p>
+
+    <p style="text-align: center; margin-top: 3rem; color: var(--text-tertiary);">© 2026 Olivier Dahan</p>
+</body>
+</html>

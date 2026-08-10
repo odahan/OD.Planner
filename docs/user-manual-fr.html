@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OD.Planner - Manuel d'utilisation</title>
+    <style>
+        :root {
+            --bg: #16181D;
+            --surface: #1E2127;
+            --surface-alt: #262A31;
+            --border: #343943;
+            --text: #ECEFF4;
+            --text-secondary: #AEB6C2;
+            --text-tertiary: #6B7482;
+            --accent: #7C83F7;
+            --accent-hover: #949BFA;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 { color: var(--accent); font-size: 2rem; margin-bottom: 0.5rem; }
+        h2 { color: var(--accent); font-size: 1.4rem; margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+        h3 { color: var(--text); font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+        p { margin-bottom: 0.75rem; color: var(--text-secondary); }
+        ul, ol { margin: 0.5rem 0 1rem 1.5rem; color: var(--text-secondary); }
+        li { margin-bottom: 0.3rem; }
+        code {
+            background: var(--surface-alt);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+        .shortcut {
+            display: inline-block;
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.1rem 0.5rem;
+            font-size: 0.85em;
+            margin: 0 0.2rem;
+        }
+        .note {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .note p { margin-bottom: 0; }
+        .header { text-align: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .version { color: var(--text-tertiary); font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.6rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--accent); font-weight: 600; }
+        td { color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>OD.Planner</h1>
+        <p class="version">Version 1.3.0 - Manuel d'utilisation</p>
+    </div>
+
+    <h2>Introduction</h2>
+    <p>OD.Planner est un gestionnaire de tâches léger et natif pour Windows, développé avec WPF et .NET. Il garde votre liste de tâches à portée de main dans une petite fenêtre toujours prête et s'assure que les échéances ne passent pas inaperçues — avec des alarmes sonores et une priorité par code couleur.</p>
+
+    <h2>Premiers pas</h2>
+    <h3>Premier lancement</h3>
+    <p>Lors du premier lancement d'OD.Planner, vous êtes invité à choisir où stocker votre base de données de tâches. Par défaut, elle est créée à côté de l'exécutable de l'application. Vous pouvez modifier cet emplacement ultérieurement dans les Paramètres.</p>
+
+    <h3>Fenêtre principale</h3>
+    <p>La fenêtre principale affiche votre liste de tâches avec :</p>
+    <ul>
+        <li>Un menu déroulant de filtrage par catégorie pour n'afficher que les tâches d'une catégorie spécifique</li>
+        <li>Une case à cocher pour afficher/masquer les tâches terminées</li>
+        <li>un bouton "Ajouter" pour créer de nouvelles tâches</li>
+    </ul>
+
+    <h2>Gestion des tâches</h2>
+    <h3>Créer une tâche</h3>
+    <p>Cliquez sur le bouton <strong>Ajouter</strong> ou appuyez sur <span class="shortcut">Ctrl+N</span> pour créer une nouvelle tâche. Vous serez invité à saisir :</p>
+    <ul>
+        <li><strong>Titre</strong> - La description de la tâche (obligatoire)</li>
+        <li><strong>Catégorie</strong> - Catégorie optionnelle pour l'organisation</li>
+        <li><strong>Priorité</strong> - Faible, Moyenne, Urgente ou Très urgente</li>
+        <li><strong>Échéance</strong> - Aucune, X jours après la création, ou une date fixe</li>
+    </ul>
+
+    <h3>Modifier une tâche</h3>
+    <p>Sélectionnez une tâche et appuyez sur <span class="shortcut">F2</span> ou cliquez sur le bouton modifier pour la modifier.</p>
+
+    <h3>Terminer une tâche</h3>
+    <p>Cliquez sur la case à cocher à côté d'une tâche pour la marquer comme terminée. Les tâches terminées peuvent être masquées à l'aide de la case à cocher "Terminées".</p>
+
+    <h3>Supprimer une tâche</h3>
+    <p>Cliquez sur le bouton supprimer à côté d'une tâche. Une confirmation vous sera demandée.</p>
+
+    <h3>Raccourcis clavier</h3>
+    <table>
+        <tr><th>Raccourci</th><th>Action</th></tr>
+        <tr><td><span class="shortcut">Ctrl+N</span></td><td>Nouvelle tâche</td></tr>
+        <tr><td><span class="shortcut">F2</span></td><td>Modifier la tâche sélectionnée</td></tr>
+        <tr><td><span class="shortcut">Delete</span></td><td>Supprimer la tâche sélectionnée</td></tr>
+    </table>
+
+    <h2>Échéances et alarmes</h2>
+    <h3>Types d'échéance</h3>
+    <ul>
+        <li><strong>Aucune</strong> - Pas d'échéance pour cette tâche</li>
+        <li><strong>Jours après création</strong> - L'échéance est à X jours après la création de la tâche</li>
+        <li><strong>Date fixe</strong> - L'échéance est une date spécifique</li>
+    </ul>
+
+    <h3>Reporter les échéances</h3>
+    <p>Chaque tâche avec échéance affiche des boutons <strong>+1j</strong> et <strong>+1sem</strong> pour reporter l'échéance d'un jour ou d'une semaine.</p>
+
+    <h3>Niveaux d'alarme</h3>
+    <table>
+        <tr><th>Niveau</th><th>Déclencheur</th><th>Indicateur</th></tr>
+        <tr><td>Attention (J-1)</td><td>1 jour avant l'échéance</td><td>Pastille jaune</td></tr>
+        <tr><td>Échéance (J0)</td><td>Le jour de l'échéance</td><td>Pastille orange</td></tr>
+        <tr><td>En retard</td><td>Après l'échéance</td><td>Pastille rouge + clignotement</td></tr>
+    </table>
+
+    <h3>Popups d'alarme</h3>
+    <p>Lorsqu'une alarme se déclenche, un popup apparaît avec les options suivantes :</p>
+    <ul>
+        <li><strong>Snooze 1h</strong> - Faire taire l'alarme pendant 1 heure</li>
+        <li><strong>Arrêter</strong> - Désactiver l'alarme définitivement</li>
+    </ul>
+
+    <h2>Catégories</h2>
+    <p>Les catégories vous aident à organiser vos tâches. Vous pouvez créer, renommer et supprimer des catégories dans la fenêtre des Paramètres.</p>
+    <p>Catégories par défaut : <strong>Travail</strong> et <strong>Personnel</strong>.</p>
+
+    <h2>Paramètres</h2>
+    <p>Cliquez sur l'engrenage pour ouvrir les Paramètres. Options disponibles :</p>
+
+    <h3>Apparence</h3>
+    <ul>
+        <li><strong>Thème sombre</strong> - Basculer entre les thèmes clair et sombre</li>
+        <li><strong>Afficher les tâches terminées</strong> - Basculer la visibilité des tâches terminées</li>
+        <li><strong>Réduire les animations</strong> - Désactiver les animations de clignotement pour l'accessibilité</li>
+    </ul>
+
+    <h3>Alarmes sonores</h3>
+    <ul>
+        <li><strong>Activer les alarmes sonores</strong> - Interrupteur général pour toutes les alertes sonores</li>
+        <li><strong>Alerte J-1</strong> - Alerte sonore la veille de l'échéance</li>
+        <li><strong>Alerte J0</strong> - Alerte sonore le jour de l'échéance</li>
+        <li><strong>Alerte de retard</strong> - Alerte sonore quand l'échéance est dépassée</li>
+    </ul>
+
+    <h3>Système</h3>
+    <ul>
+        <li><strong>Démarrer avec Windows</strong> - Lancer OD.Planner au démarrage du système</li>
+    </ul>
+
+    <h3>Base de données</h3>
+    <p>Modifier l'emplacement de votre fichier de base de données de tâches. L'application utilisera le nouvel emplacement après redémarrage.</p>
+
+    <h2>Stockage des données</h2>
+    <p>Les tâches sont stockées dans une base de données SQLite (<code>tasks.db</code>). Les paramètres sont enregistrés sous <code>settings.json</code>. Les deux fichiers sont situés à côté de l'application par défaut, ou sous <code>%LOCALAPPDATA%\OD.Planner</code> si le dossier de l'application n'est pas accessible en écriture.</p>
+
+    <div class="note">
+        <p><strong>Note :</strong> Vous pouvez copier ou déplacer le fichier <code>tasks.db</code> en toute sécurité pour sauvegarder vos tâches ou les transférer vers un autre ordinateur.</p>
+    </div>
+
+    <h2>Zone de notification</h2>
+    <p>OD.Planner se minimise dans la zone de notification. Les alarmes et les passages de minuit continuent de fonctionner lorsque l'application est en arrière-plan.</p>
+
+    <h2>Comportement de la fenêtre</h2>
+    <ul>
+        <li>La fenêtre mémorise sa position et sa taille entre les sessions</li>
+        <li>Au premier lancement, elle s'ancre en haut à droite de l'écran principal</li>
+        <li>Double-cliquez sur l'en-tête pour maximiser/restaurer</li>
+    </ul>
+
+    <h2>Compilation depuis les sources</h2>
+    <p>Prérequis : Windows 10+, SDK .NET 10</p>
+    <pre style="background: var(--surface); padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>git clone https://github.com/odahan/OD.Planner.git
+cd OD.Planner
+dotnet build OD.Planner.slnx -c Release</code></pre>
+
+    <h2>Licence</h2>
+    <p>OD.Planner est publié en tant que <strong>donationware</strong>. Libre d'utilisation, de modification et de distribution. Si vous le trouvez utile, un petit don est apprécié.</p>
+
+    <p style="text-align: center; margin-top: 3rem; color: var(--text-tertiary);">© 2026 Olivier Dahan</p>
+</body>
+</html>
