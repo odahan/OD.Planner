@@ -27,6 +27,19 @@ public static class DeadlineCalculator
             return null;
         }
 
-        return (int)(deadline.Value.Date - today.Date).TotalDays;
+        // Use Date property to ensure we're comparing dates only (no time component).
+        // This avoids DST issues since we're working with whole days only.
+        var deadlineDate = deadline.Value.Date;
+        var todayDate = today.Date;
+
+        return (int)(deadlineDate - todayDate).TotalDays;
+    }
+
+    /// <summary>
+    /// Gets the days remaining using the current local date.
+    /// </summary>
+    public static int? GetDaysRemaining(PlannerTask task)
+    {
+        return GetDaysRemaining(task, DateTime.Today);
     }
 }

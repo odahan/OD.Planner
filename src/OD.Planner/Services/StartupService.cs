@@ -13,25 +13,40 @@ public static class StartupService
         return key?.GetValue(ValueName) is string value && !string.IsNullOrWhiteSpace(value);
     }
 
-    public static void SetEnabled(bool enabled)
+    public static bool SetEnabled(bool enabled)
     {
-        using var key = Registry.CurrentUser.CreateSubKey(RunKeyPath);
-        if (key is null)
+        try
         {
-            return;
-        }
-
-        if (enabled)
-        {
-            var exe = Environment.ProcessPath;
-            if (!string.IsNullOrEmpty(exe))
+            using var key = Registry.CurrentUser.CreateSubKey(RunKeyPath);
+            if (key is null)
             {
-                key.SetValue(ValueName, $"\"{exe}\"");
+                return false;
             }
+
+            if (enabled)
+            {
+                var exe = Environment.ProcessPath;
+                if (!string.IsNullOrEmpty(exe))
+                {
+                    key.SetValue(ValueName, $"\"{exe}\"");
+                }
+            }
+            else
+            {
+                key.DeleteValue(ValueName, throwOnMissingValue: false);
+            }
+
+            return true;
         }
-        else
+        catch (UnauthorizedAccessException)
         {
-            key.DeleteValue(ValueName, throwOnMissingValue: false);
+            // Registry write denied - likely due to permissions
+            return false;
+        }
+        catch (Exception)
+        {
+            // Any other registry error
+            return false;
         }
     }
 }

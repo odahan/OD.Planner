@@ -99,6 +99,11 @@ public sealed partial class TaskEditViewModel : ObservableObject
 
     private static Brush? Res(string key)
     {
+        if (Application.Current is null)
+        {
+            return Brushes.Transparent;
+        }
+
         var value = Application.Current.TryFindResource(key) as Brush;
         return value ?? Brushes.Transparent;
     }

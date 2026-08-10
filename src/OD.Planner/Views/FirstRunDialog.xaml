@@ -46,10 +46,14 @@
                             Click="Browse_Click" />
                 </Grid>
 
-                <TextBlock Text="{Binding Error}" Style="{StaticResource BodyTextStyle}"
-                           Foreground="{DynamicResource OverdueForeground}" Margin="0,8,0,0" TextWrapping="Wrap"
-                           Visibility="{Binding Error, Converter={StaticResource EmptyToCollapsed}}" />
-            </StackPanel>
+                 <TextBlock Text="{Binding Error}" Style="{StaticResource BodyTextStyle}"
+                            Foreground="{DynamicResource OverdueForeground}" Margin="0,8,0,0" TextWrapping="Wrap"
+                            Visibility="{Binding Error, Converter={StaticResource EmptyToCollapsed}}" />
+                 <TextBlock Text="Une base de données existe déjà à cet emplacement. Elle sera réutilisée."
+                            Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
+                            Visibility="{Binding DbExists, Converter={StaticResource BoolToVisible}}" />
+             </StackPanel>
 
             <!-- Footer -->
             <Grid Grid.Row="2" Margin="0,20,0,0">

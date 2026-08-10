@@ -11,13 +11,29 @@ public sealed partial class FirstRunViewModel : ObservableObject
     [ObservableProperty]
     private string? error;
 
+    [ObservableProperty]
+    private bool dbExists;
+
     public FirstRunViewModel()
     {
         dbPath = Path.Combine(AppContext.BaseDirectory, "tasks.db");
+        UpdateDbExists();
+    }
+
+    partial void OnDbPathChanged(string value)
+    {
+        UpdateDbExists();
+    }
+
+    private void UpdateDbExists()
+    {
+        DbExists = !string.IsNullOrWhiteSpace(DbPath) && File.Exists(DbPath);
     }
 
     public bool Validate()
     {
+        Error = null;
+
         if (string.IsNullOrWhiteSpace(DbPath))
         {
             Error = "Le chemin est vide.";
@@ -40,7 +56,6 @@ public sealed partial class FirstRunViewModel : ObservableObject
             return false;
         }
 
-        Error = null;
         return true;
     }
 }

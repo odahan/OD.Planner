@@ -63,4 +63,4 @@ OD.Planner is released as **donationware**. See the [LICENSE](LICENSE) file for 
 
 ## Version
 
-Current version: **1.1.0**
+Current version: **1.3.0**

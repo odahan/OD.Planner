@@ -13,8 +13,15 @@ public sealed class AlarmEngine : IDisposable
     private readonly AppSettings _settings;
     private readonly SoundService _sounds;
     private readonly HashSet<(long TaskId, AlarmLevel Level)> _stopped = new();
-    private readonly Dictionary<(long TaskId, AlarmLevel Level), DispatcherTimer> _snoozes = new();
+    private readonly Dictionary<(long TaskId, AlarmLevel Level), SnoozeState> _snoozes = new();
     private DispatcherTimer? _midnightTimer;
+
+    private sealed class SnoozeState
+    {
+        public required DispatcherTimer Timer { get; init; }
+        public required PlannerTask TaskSnapshot { get; init; }
+        public required AlarmLevel Level { get; init; }
+    }
 
     public AlarmEngine(Func<IReadOnlyList<PlannerTask>> getTasks, AppSettings settings, SoundService sounds)
     {
@@ -80,14 +87,17 @@ public sealed class AlarmEngine : IDisposable
             return;
         }
 
+        var taskSnapshot = entry.Task.Clone();
         var timer = new DispatcherTimer { Interval = SnoozeInterval };
         timer.Tick += (_, _) =>
         {
             timer.Stop();
-            _snoozes.Remove(key);
-            ReFire(key);
+            if (_snoozes.Remove(key, out var state))
+            {
+                ReFire(state);
+            }
         };
-        _snoozes[key] = timer;
+        _snoozes[key] = new SnoozeState { Timer = timer, TaskSnapshot = taskSnapshot, Level = entry.Level };
         timer.Start();
     }
 
@@ -95,9 +105,9 @@ public sealed class AlarmEngine : IDisposable
     {
         var key = (entry.Task.Id, entry.Level);
         _stopped.Add(key);
-        if (_snoozes.Remove(key, out var timer))
+        if (_snoozes.Remove(key, out var state))
         {
-            timer.Stop();
+            state.Timer.Stop();
         }
     }
 
@@ -120,23 +130,28 @@ public sealed class AlarmEngine : IDisposable
     public void ResetSession()
     {
         _stopped.Clear();
-        foreach (var timer in _snoozes.Values)
+        foreach (var state in _snoozes.Values)
         {
-            timer.Stop();
+            state.Timer.Stop();
         }
 
         _snoozes.Clear();
     }
 
-    private void ReFire((long TaskId, AlarmLevel Level) key)
+    private void ReFire(SnoozeState state)
     {
-        var task = _getTasks().FirstOrDefault(t => t.Id == key.TaskId);
-        if (task is null || task.IsCompleted || _stopped.Contains(key))
+        var key = (state.TaskSnapshot.Id, state.Level);
+        if (_stopped.Contains(key))
         {
             return;
         }
 
-        var days = DeadlineCalculator.GetDaysRemaining(task, DateTime.Today);
+        if (state.TaskSnapshot.IsCompleted)
+        {
+            return;
+        }
+
+        var days = DeadlineCalculator.GetDaysRemaining(state.TaskSnapshot, DateTime.Today);
         if (!days.HasValue)
         {
             return;
@@ -150,7 +165,7 @@ public sealed class AlarmEngine : IDisposable
 
         Raise(new List<AlarmEntry>
         {
-            new() { Task = task, Level = level, DaysRemaining = days.Value },
+            new() { Task = state.TaskSnapshot, Level = level, DaysRemaining = days.Value },
         });
     }
 
@@ -172,17 +187,23 @@ public sealed class AlarmEngine : IDisposable
         _ => false,
     };
 
+    private DateTime _lastMidnightDate = DateTime.Today;
+
     private void ScheduleMidnight()
     {
         _midnightTimer?.Stop();
-        var next = DateTime.Today.AddDays(1).AddSeconds(2);
-        _midnightTimer = new DispatcherTimer { Interval = next - DateTime.Now };
+        // Poll every minute to check for midnight crossing.
+        // This is resilient to system clock changes (NTP sync, DST).
+        _midnightTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
         _midnightTimer.Tick += (_, _) =>
         {
-            _midnightTimer.Stop();
-            CheckNow();
-            MidnightPassed?.Invoke();
-            ScheduleMidnight();
+            var today = DateTime.Today;
+            if (today > _lastMidnightDate)
+            {
+                _lastMidnightDate = today;
+                CheckNow();
+                MidnightPassed?.Invoke();
+            }
         };
         _midnightTimer.Start();
     }
@@ -190,9 +211,9 @@ public sealed class AlarmEngine : IDisposable
     public void Dispose()
     {
         _midnightTimer?.Stop();
-        foreach (var timer in _snoozes.Values)
+        foreach (var state in _snoozes.Values)
         {
-            timer.Stop();
+            state.Timer.Stop();
         }
 
         _snoozes.Clear();

@@ -4,47 +4,72 @@ using OD.Planner.Models;
 
 namespace OD.Planner.Services;
 
-public sealed class SoundService
+/// <summary>
+/// Configuration for alarm sounds. Allows customizing the tone patterns
+/// for each alarm level.
+/// </summary>
+public sealed class SoundConfiguration
+{
+    public (double Freq, int Ms, int GapMs, double Vol)[] AttentionBeeps { get; set; } =
+    [
+        (880, 150, 100, 0.45),
+        (880, 150, 0, 0.45)
+    ];
+
+    public (double Freq, int Ms, int GapMs, double Vol)[] DueBeeps { get; set; } =
+    [
+        (880, 200, 120, 0.65),
+        (1046, 200, 120, 0.65),
+        (1046, 200, 0, 0.65)
+    ];
+
+    public (double Freq, int Ms, int GapMs, double Vol)[] OverdueBeeps { get; set; } =
+    [
+        (1046, 150, 60, 0.8),
+        (1046, 150, 60, 0.8),
+        (1046, 150, 60, 0.8),
+        (1046, 150, 60, 0.8),
+        (0, 0, 250, 0),
+        (1046, 150, 60, 0.8),
+        (1046, 150, 60, 0.8),
+        (1046, 150, 60, 0.8),
+        (1046, 150, 60, 0.8),
+        (0, 0, 250, 0),
+        (1046, 150, 60, 0.8),
+        (1046, 150, 60, 0.8),
+        (1046, 150, 60, 0.8),
+        (1046, 150, 60, 0.8)
+    ];
+}
+
+public sealed class SoundService : IDisposable
 {
     private readonly object _lock = new();
     private readonly Queue<AlarmLevel> _queue = new();
+    private readonly Dictionary<AlarmLevel, SoundPlayer> _players = new();
     private bool _playing;
+    private bool _disposed;
 
-    private readonly byte[] _attention;
-    private readonly byte[] _due;
-    private readonly byte[] _overdue;
-
-    public SoundService()
+    public SoundService() : this(new SoundConfiguration())
     {
-        _attention = GenerateWav(
-            (880, 150, 100, 0.45),
-            (880, 150, 0, 0.45));
+    }
 
-        _due = GenerateWav(
-            (880, 200, 120, 0.65),
-            (1046, 200, 120, 0.65),
-            (1046, 200, 0, 0.65));
+    public SoundService(SoundConfiguration config)
+    {
+        _players[AlarmLevel.Attention] = LoadPlayer(GenerateWav(config.AttentionBeeps));
+        _players[AlarmLevel.Due] = LoadPlayer(GenerateWav(config.DueBeeps));
+        _players[AlarmLevel.Overdue] = LoadPlayer(GenerateWav(config.OverdueBeeps));
+    }
 
-        var overdue = new List<(double Freq, int Ms, int GapMs, double Vol)>();
-        for (var group = 0; group < 3; group++)
-        {
-            for (var i = 0; i < 4; i++)
-            {
-                overdue.Add((1046, 150, 60, 0.8));
-            }
-
-            if (group < 2)
-            {
-                overdue.Add((0, 0, 250, 0));
-            }
-        }
-
-        _overdue = GenerateWav(overdue.ToArray());
+    private static SoundPlayer LoadPlayer(byte[] wavBytes)
+    {
+        var stream = new MemoryStream(wavBytes, writable: false);
+        return new SoundPlayer(stream);
     }
 
     public void Play(AlarmLevel level)
     {
-        if (level == AlarmLevel.None)
+        if (level == AlarmLevel.None || _disposed)
         {
             return;
         }
@@ -79,24 +104,30 @@ public sealed class SoundService
                 level = _queue.Dequeue();
             }
 
-            var bytes = GetBytes(level);
-            if (bytes is not null)
+            if (_players.TryGetValue(level, out var player) && !_disposed)
             {
-                using var stream = new MemoryStream(bytes, writable: false);
-                new SoundPlayer(stream).Play();
+                player.Play();
             }
 
             await Task.Delay(400);
         }
     }
 
-    private byte[]? GetBytes(AlarmLevel level) => level switch
+    public void Dispose()
     {
-        AlarmLevel.Attention => _attention,
-        AlarmLevel.Due => _due,
-        AlarmLevel.Overdue => _overdue,
-        _ => null,
-    };
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+
+        foreach (var player in _players.Values)
+        {
+            player.Dispose();
+        }
+        _players.Clear();
+    }
 
     private static byte[] GenerateWav(params (double Freq, int Ms, int GapMs, double Vol)[] beeps)
     {

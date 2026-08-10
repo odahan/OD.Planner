@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Data.Sqlite;
 using OD.Planner.Data;
 using OD.Planner.Models;
 using OD.Planner.Services;
@@ -98,7 +99,12 @@ public sealed partial class SettingsViewModel : ObservableObject
     partial void OnAutoStartChanged(bool value)
     {
         _settings.AutoStartEnabled = value;
-        StartupService.SetEnabled(value);
+        if (!StartupService.SetEnabled(value))
+        {
+            // Failed to write to registry - revert the setting
+            _settings.AutoStartEnabled = !value;
+            OnPropertyChanged(nameof(AutoStart));
+        }
         SettingsService.Save(_settings);
     }
 
@@ -165,9 +171,14 @@ public sealed partial class SettingsViewModel : ObservableObject
             ReloadCategories();
             _onCategoriesChanged();
         }
-        catch (Exception)
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
         {
+            // SQLITE_CONSTRAINT (19) = UNIQUE constraint failed
             CategoryError = "Une catégorie de ce nom existe déjà.";
+        }
+        catch (Exception ex)
+        {
+            CategoryError = $"Erreur : {ex.Message}";
         }
     }
 

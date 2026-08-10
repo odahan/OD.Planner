@@ -4,7 +4,8 @@
         Width="340" SizeToContent="Height" MaxHeight="420"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
         Topmost="True" ShowInTaskbar="False" ShowActivated="False"
-        FontFamily="{StaticResource DefaultFontFamily}">
+        FontFamily="{StaticResource DefaultFontFamily}"
+        AutomationProperties.Name="Alarme OD.Planner">
 
     <Border CornerRadius="10" Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource AlarmGlowBrush}" BorderThickness="1.5">

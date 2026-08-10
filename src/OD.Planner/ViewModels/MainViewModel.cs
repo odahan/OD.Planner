@@ -19,15 +19,17 @@ public sealed class CategoryFilter
     public override string ToString() => DisplayName;
 }
 
-public sealed partial class MainViewModel : ObservableObject
+public sealed partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly AppSettings _settings;
     private readonly ThemeService _themes;
     private readonly AlarmEngine _alarmEngine;
     private readonly DispatcherTimer _blinkTimer;
     private readonly Dictionary<long, string> _categoryNames = new();
+    private readonly Action<bool> _themeChangedHandler;
     private AppDatabase _db;
     private bool _blinkOn;
+    private bool _disposed;
 
     public ObservableCollection<TaskItemViewModel> Tasks { get; } = new();
     public ObservableCollection<CategoryFilter> CategoryFilters { get; } = new();
@@ -55,7 +57,8 @@ public sealed partial class MainViewModel : ObservableObject
 
         _blinkTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(650) };
         _blinkTimer.Tick += (_, _) => OnBlinkTick();
-        _themes.ThemeChanged += _ => RefreshList();
+        _themeChangedHandler = _ => RefreshList();
+        _themes.ThemeChanged += _themeChangedHandler;
 
         RefreshCategories();
         RefreshList();
@@ -304,5 +307,17 @@ public sealed partial class MainViewModel : ObservableObject
                 item.BlinkOn = _blinkOn;
             }
         }
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        _blinkTimer.Stop();
+        _themes.ThemeChanged -= _themeChangedHandler;
     }
 }

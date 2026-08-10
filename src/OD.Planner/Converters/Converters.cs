@@ -6,7 +6,7 @@ namespace OD.Planner.Converters;
 
 public sealed class BoolToVisibilityConverter : IValueConverter
 {
-    public bool Invert { get; set; }
+    public bool Invert { get; init; }
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
@@ -25,7 +25,7 @@ public sealed class BoolToVisibilityConverter : IValueConverter
 
 public sealed class NullToVisibilityConverter : IValueConverter
 {
-    public bool ShowWhenNull { get; set; }
+    public bool ShowWhenNull { get; init; }
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
@@ -40,9 +40,9 @@ public sealed class NullToVisibilityConverter : IValueConverter
 
 public sealed class BoolToOpacityConverter : IValueConverter
 {
-    public double OnOpacity { get; set; } = 1;
-    public double OffOpacity { get; set; } = 0.6;
-    public bool Invert { get; set; }
+    public double OnOpacity { get; init; } = 1;
+    public double OffOpacity { get; init; } = 0.6;
+    public bool Invert { get; init; }
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
@@ -61,7 +61,7 @@ public sealed class BoolToOpacityConverter : IValueConverter
 
 public sealed class EmptyToVisibilityConverter : IValueConverter
 {
-    public bool ShowWhenEmpty { get; set; }
+    public bool ShowWhenEmpty { get; init; }
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {

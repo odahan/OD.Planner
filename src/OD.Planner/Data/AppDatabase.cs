@@ -8,6 +8,24 @@ namespace OD.Planner.Data;
 public sealed class AppDatabase
 {
     private readonly string _connectionString;
+    private const int CurrentSchemaVersion = 1;
+
+    private static readonly string[] DateFormats =
+    [
+        "yyyy-MM-dd",
+        "yyyy-MM-ddTHH:mm:ss",
+        "yyyy-MM-ddTHH:mm:ss.fff",
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyy-MM-dd HH:mm:ss.fff",
+    ];
+
+    private static readonly string[] DateTimeFormats =
+    [
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyy-MM-ddTHH:mm:ss",
+        "yyyy-MM-ddTHH:mm:ss.fff",
+        "yyyy-MM-dd HH:mm:ss.fff",
+    ];
 
     public AppDatabase(string dbPath)
     {
@@ -21,7 +39,7 @@ public sealed class AppDatabase
         {
             DataSource = dbPath,
             Mode = SqliteOpenMode.ReadWriteCreate,
-            Cache = SqliteCacheMode.Shared,
+            Cache = SqliteCacheMode.Private,
         }.ToString();
     }
 
@@ -31,6 +49,11 @@ public sealed class AppDatabase
     {
         using var conn = Open();
         conn.Open();
+        Execute(conn, """
+            CREATE TABLE IF NOT EXISTS schema_version (
+                Version INTEGER NOT NULL
+            );
+            """);
         Execute(conn, """
             CREATE TABLE IF NOT EXISTS categories (
                 Id   INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -52,6 +75,13 @@ public sealed class AppDatabase
             );
             """);
 
+        var version = GetSchemaVersion(conn);
+        if (version < CurrentSchemaVersion)
+        {
+            Migrate(conn, version, CurrentSchemaVersion);
+            SetSchemaVersion(conn, CurrentSchemaVersion);
+        }
+
         using var check = conn.CreateCommand();
         check.CommandText = "SELECT COUNT(*) FROM categories";
         if (Convert.ToInt64(check.ExecuteScalar()) == 0)
@@ -62,6 +92,50 @@ public sealed class AppDatabase
                 insert.CommandText = "INSERT INTO categories (Name) VALUES ($name)";
                 insert.Parameters.AddWithValue("$name", name);
                 insert.ExecuteNonQuery();
+            }
+        }
+    }
+
+    private static int GetSchemaVersion(SqliteConnection conn)
+    {
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name='schema_version'";
+        if (cmd.ExecuteScalar() is null)
+        {
+            return 0;
+        }
+
+        cmd.CommandText = "SELECT Version FROM schema_version LIMIT 1";
+        return Convert.ToInt32(cmd.ExecuteScalar());
+    }
+
+    private static void SetSchemaVersion(SqliteConnection conn, int version)
+    {
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "DELETE FROM schema_version";
+        cmd.ExecuteNonQuery();
+
+        cmd.CommandText = "INSERT INTO schema_version (Version) VALUES ($version)";
+        cmd.Parameters.AddWithValue("$version", version);
+        cmd.ExecuteNonQuery();
+    }
+
+    /// <summary>
+    /// Migrates the database schema from one version to another.
+    /// Each migration is idempotent and can be safely re-run.
+    /// </summary>
+    private static void Migrate(SqliteConnection conn, int fromVersion, int toVersion)
+    {
+        for (var v = fromVersion; v < toVersion; v++)
+        {
+            switch (v)
+            {
+                // Future migrations go here:
+                // case 0:
+                //     Execute(conn, "ALTER TABLE tasks ADD COLUMN ...");
+                //     break;
+                default:
+                    break;
             }
         }
     }
@@ -142,16 +216,30 @@ public sealed class AppDatabase
                 Priority = (Priority)reader.GetInt32(3),
                 DeadlineType = (DeadlineType)reader.GetInt32(4),
                 DeadlineDays = reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                DeadlineDate = reader.IsDBNull(6) ? null : DateTime.ParseExact(reader.GetString(6), "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                CreatedAt = DateTime.ParseExact(reader.GetString(7), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+                DeadlineDate = reader.IsDBNull(6) ? null : ParseDate(reader.GetString(6)),
+                CreatedAt = ParseDateTime(reader.GetString(7)),
                 IsCompleted = reader.GetInt64(8) != 0,
                 CompletedAt = reader.IsDBNull(9)
                     ? null
-                    : DateTime.ParseExact(reader.GetString(9), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+                    : ParseDateTime(reader.GetString(9)),
             });
         }
 
         return result;
+    }
+
+    private static DateTime ParseDate(string value)
+    {
+        return DateTime.TryParseExact(value, DateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt)
+            ? dt
+            : DateTime.Parse(value, CultureInfo.InvariantCulture);
+    }
+
+    private static DateTime ParseDateTime(string value)
+    {
+        return DateTime.TryParseExact(value, DateTimeFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt)
+            ? dt
+            : DateTime.Parse(value, CultureInfo.InvariantCulture);
     }
 
     public long InsertTask(PlannerTask task)

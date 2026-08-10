@@ -22,6 +22,10 @@ public sealed partial class TaskItemViewModel : ObservableObject
     private bool _blinkOn;
     private Brush? _glowBrush;
 
+    // Static cache for brushes - loaded once and reused across all instances.
+    // This avoids repeated Application.Current.TryFindResource calls on every Refresh.
+    private static readonly BrushCache Cache = new();
+
     public TaskItemViewModel(PlannerTask task, string? categoryName)
     {
         Task = task;
@@ -93,22 +97,22 @@ public sealed partial class TaskItemViewModel : ObservableObject
         {
             _deadlineText = $"{days}j";
             _deadlineVisible = true;
-            _deadlineForeground = Res("OverdueForeground");
-            _deadlineBackground = Res("OverdueBackground");
+            _deadlineForeground = Cache.Get("OverdueForeground");
+            _deadlineBackground = Cache.Get("OverdueBackground");
         }
         else if (days == 0)
         {
             _deadlineText = "Aujourd'hui";
             _deadlineVisible = true;
-            _deadlineForeground = Res("DueTodayForeground");
-            _deadlineBackground = Res("DueTodayBackground");
+            _deadlineForeground = Cache.Get("DueTodayForeground");
+            _deadlineBackground = Cache.Get("DueTodayBackground");
         }
         else
         {
             _deadlineText = $"{days}j";
             _deadlineVisible = true;
-            _deadlineForeground = Res("TextSecondaryBrush");
-            _deadlineBackground = Res("SurfaceAltBrush");
+            _deadlineForeground = Cache.Get("TextSecondaryBrush");
+            _deadlineBackground = Cache.Get("SurfaceAltBrush");
         }
 
         _priorityLabel = Task.Priority switch
@@ -121,10 +125,10 @@ public sealed partial class TaskItemViewModel : ObservableObject
 
         (_priorityBackground, _priorityForeground) = Task.Priority switch
         {
-            Priority.Low => (Res("PriorityLowBackground"), Res("PriorityLowForeground")),
-            Priority.Medium => (Res("PriorityMediumBackground"), Res("PriorityMediumForeground")),
-            Priority.Urgent => (Res("PriorityUrgentBackground"), Res("PriorityUrgentForeground")),
-            _ => (Res("PriorityVeryUrgentBackground"), Res("PriorityVeryUrgentForeground")),
+            Priority.Low => (Cache.Get("PriorityLowBackground"), Cache.Get("PriorityLowForeground")),
+            Priority.Medium => (Cache.Get("PriorityMediumBackground"), Cache.Get("PriorityMediumForeground")),
+            Priority.Urgent => (Cache.Get("PriorityUrgentBackground"), Cache.Get("PriorityUrgentForeground")),
+            _ => (Cache.Get("PriorityVeryUrgentBackground"), Cache.Get("PriorityVeryUrgentForeground")),
         };
 
         _categoryLabel = _categoryName ?? string.Empty;
@@ -132,7 +136,7 @@ public sealed partial class TaskItemViewModel : ObservableObject
 
         _isBlinking = !Task.IsCompleted &&
                       ((days.HasValue && days < 0) || Task.Priority == Priority.VeryUrgent);
-        _glowBrush = Res("AlarmGlowBrush");
+        _glowBrush = Cache.Get("AlarmGlowBrush");
 
         OnPropertyChanged(nameof(Title));
         OnPropertyChanged(nameof(IsCompleted));
@@ -149,9 +153,23 @@ public sealed partial class TaskItemViewModel : ObservableObject
         OnPropertyChanged(nameof(GlowBrush));
     }
 
-    private static Brush? Res(string key)
+    /// <summary>
+    /// Caches WPF brushes after first lookup to avoid repeated resource tree walks.
+    /// </summary>
+    private sealed class BrushCache
     {
-        var value = Application.Current.TryFindResource(key) as Brush;
-        return value ?? Brushes.Transparent;
+        private readonly Dictionary<string, Brush?> _cache = new();
+
+        public Brush? Get(string key)
+        {
+            if (_cache.TryGetValue(key, out var cached))
+            {
+                return cached;
+            }
+
+            var value = Application.Current?.TryFindResource(key) as Brush;
+            _cache[key] = value;
+            return value;
+        }
     }
 }

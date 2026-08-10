@@ -17,6 +17,12 @@ public static class SettingsService
 
     public static string SettingsFile { get; } = Path.Combine(SettingsDirectory, FileName);
 
+    /// <summary>
+    /// Raised when a settings operation fails. Subscribers can display
+    /// a non-intrusive notification to the user or log the error.
+    /// </summary>
+    public static event Action<string>? ErrorOccurred;
+
     public static AppSettings Load()
     {
         try
@@ -27,15 +33,15 @@ public static class SettingsService
                 return JsonSerializer.Deserialize<AppSettings>(json, JsonOptions) ?? new AppSettings();
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Corrupted settings: fall back to defaults.
+            OnErrorOccurred($"Impossible de charger les paramètres : {ex.Message}");
         }
 
         return new AppSettings();
     }
 
-    public static void Save(AppSettings settings)
+    public static bool Save(AppSettings settings)
     {
         try
         {
@@ -44,11 +50,18 @@ public static class SettingsService
             var tmp = SettingsFile + ".tmp";
             File.WriteAllText(tmp, json);
             File.Move(tmp, SettingsFile, overwrite: true);
+            return true;
         }
-        catch
+        catch (Exception ex)
         {
-            // Best effort: never crash the app because settings can't be written.
+            OnErrorOccurred($"Impossible d'enregistrer les paramètres : {ex.Message}");
+            return false;
         }
+    }
+
+    private static void OnErrorOccurred(string message)
+    {
+        ErrorOccurred?.Invoke(message);
     }
 
     private static string ResolveSettingsDirectory()

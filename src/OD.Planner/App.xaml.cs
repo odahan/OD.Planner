@@ -46,7 +46,13 @@ public partial class App : Application
             SettingsService.Save(Settings);
         }
 
-        _db = new AppDatabase(Settings.DbPath!);
+        if (Settings.DbPath is null)
+        {
+            Shutdown();
+            return;
+        }
+
+        _db = new AppDatabase(Settings.DbPath);
         _db.EnsureCreated();
 
         _sounds = new SoundService();
@@ -73,6 +79,8 @@ public partial class App : Application
     protected override void OnExit(ExitEventArgs e)
     {
         _alarmEngine?.Dispose();
+        _mainViewModel?.Dispose();
+        _sounds?.Dispose();
         base.OnExit(e);
     }
 }
