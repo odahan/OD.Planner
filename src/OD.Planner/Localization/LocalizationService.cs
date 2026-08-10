@@ -13,7 +13,7 @@ namespace OD.Planner.Localization;
 public sealed class LocalizationService : INotifyPropertyChanged
 {
     private static readonly LocalizationService _instance = new();
-    private CultureInfo _currentCulture = new("fr");
+    private CultureInfo _currentCulture = new("en");
 
     /// <summary>
     /// Gets the singleton instance of the <see cref="LocalizationService"/>.
@@ -43,7 +43,12 @@ public sealed class LocalizationService : INotifyPropertyChanged
                 _currentCulture = value;
                 Thread.CurrentThread.CurrentUICulture = value;
                 Thread.CurrentThread.CurrentCulture = value;
+
+                // Notify every [Key] indexer binding ({loc:Loc}) so all open
+                // windows update their text immediately. A named property change
+                // alone does not refresh indexer bindings.
                 OnPropertyChanged();
+
                 LanguageChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -78,6 +83,8 @@ public sealed class LocalizationService : INotifyPropertyChanged
     /// <param name="propertyName">The name of the property that changed.</param>
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        // An empty property name signals "all properties changed" to WPF bindings,
+        // which re-evaluates the [Key] indexer bindings used by {loc:Loc}.
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
     }
 }

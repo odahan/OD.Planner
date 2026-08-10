@@ -94,7 +94,7 @@ public partial class App : Application
     /// <param name="language">The language code (e.g., "en" or "fr").</param>
     public void ApplyLanguage(string? language)
     {
-        var culture = new CultureInfo(language ?? "fr");
+        var culture = new CultureInfo(language ?? "en");
         LocalizationService.Instance.CurrentCulture = culture;
 
         var dicts = Current.Resources.MergedDictionaries;

@@ -73,5 +73,5 @@ public sealed class AppSettings
     /// <summary>
     /// Gets or sets the language code (e.g., "en" or "fr").
     /// </summary>
-    public string Language { get; set; } = "fr";
+    public string Language { get; set; } = "en";
 }
