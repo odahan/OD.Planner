@@ -47,6 +47,7 @@ public sealed class SoundService : IDisposable
     private readonly object _lock = new();
     private readonly Queue<AlarmLevel> _queue = new();
     private readonly Dictionary<AlarmLevel, SoundPlayer> _players = new();
+    private readonly CancellationTokenSource _cts = new();
     private bool _playing;
     private bool _disposed;
 
@@ -85,10 +86,10 @@ public sealed class SoundService : IDisposable
             _playing = true;
         }
 
-        _ = PlayLoopAsync();
+        _ = PlayLoopAsync(_cts.Token);
     }
 
-    private async Task PlayLoopAsync()
+    private async Task PlayLoopAsync(CancellationToken cancellationToken)
     {
         while (true)
         {
@@ -106,10 +107,24 @@ public sealed class SoundService : IDisposable
 
             if (_players.TryGetValue(level, out var player) && !_disposed)
             {
-                player.Play();
+                try
+                {
+                    player.Play();
+                }
+                catch (ObjectDisposedException)
+                {
+                    return;
+                }
             }
 
-            await Task.Delay(400);
+            try
+            {
+                await Task.Delay(400, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
         }
     }
 
@@ -121,12 +136,14 @@ public sealed class SoundService : IDisposable
         }
 
         _disposed = true;
+        _cts.Cancel();
 
         foreach (var player in _players.Values)
         {
             player.Dispose();
         }
         _players.Clear();
+        _cts.Dispose();
     }
 
     private static byte[] GenerateWav(params (double Freq, int Ms, int GapMs, double Vol)[] beeps)

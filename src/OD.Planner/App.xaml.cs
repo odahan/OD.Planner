@@ -95,8 +95,9 @@ public partial class App : Application
     public void ApplyLanguage(string? language)
     {
         var culture = new CultureInfo(language ?? "en");
-        LocalizationService.Instance.CurrentCulture = culture;
 
+        // Replace the resource dictionary BEFORE notifying bindings so that
+        // TryFindResource finds the new language values immediately.
         var dicts = Current.Resources.MergedDictionaries;
         var newDict = new ResourceDictionary
         {
@@ -110,11 +111,20 @@ public partial class App : Application
                 dicts[i].Source.OriginalString.StartsWith("Localization/Strings."))
             {
                 dicts[i] = newDict;
-                return;
+                break;
             }
         }
 
-        dicts.Add(newDict);
+        // Update the XmlLanguage for all open WPF windows so that controls
+        // like DatePicker use the correct date format (e.g., dd/MM/yyyy vs MM/dd/yyyy)
+        var xmlLanguage = System.Windows.Markup.XmlLanguage.GetLanguage(culture.Name);
+        foreach (Window window in Current.Windows)
+        {
+            window.Language = xmlLanguage;
+        }
+
+        // Now update the culture and notify bindings - they will pick up the new language
+        LocalizationService.Instance.CurrentCulture = culture;
     }
 
     /// <summary>

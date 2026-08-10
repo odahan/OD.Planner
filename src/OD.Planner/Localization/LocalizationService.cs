@@ -21,6 +21,12 @@ public sealed class LocalizationService : INotifyPropertyChanged
     public static LocalizationService Instance => _instance;
 
     /// <summary>
+    /// Static event raised when the application language changes.
+    /// ViewModels can subscribe to refresh their localized content.
+    /// </summary>
+    public static event EventHandler? LanguageChangedStatic;
+
+    /// <summary>
     /// Occurs when a property value changes.
     /// </summary>
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -50,6 +56,7 @@ public sealed class LocalizationService : INotifyPropertyChanged
                 OnPropertyChanged();
 
                 LanguageChanged?.Invoke(this, EventArgs.Empty);
+                LanguageChangedStatic?.Invoke(this, EventArgs.Empty);
             }
         }
     }

@@ -48,13 +48,41 @@ public static class SettingsService
             Directory.CreateDirectory(SettingsDirectory);
             var json = JsonSerializer.Serialize(settings, JsonOptions);
             var tmp = SettingsFile + ".tmp";
+
+            // Backup existing settings before overwriting
+            if (File.Exists(SettingsFile))
+            {
+                var backup = SettingsFile + ".bak";
+                File.Copy(SettingsFile, backup, overwrite: true);
+            }
+
             File.WriteAllText(tmp, json);
             File.Move(tmp, SettingsFile, overwrite: true);
+
+            // Remove backup on successful save
+            var backupFile = SettingsFile + ".bak";
+            if (File.Exists(backupFile))
+            {
+                File.Delete(backupFile);
+            }
+
             return true;
         }
         catch (Exception ex)
         {
             OnErrorOccurred($"Impossible d'enregistrer les paramètres : {ex.Message}");
+
+            // Attempt to restore from backup on failure
+            var backupFile = SettingsFile + ".bak";
+            if (File.Exists(backupFile) && !File.Exists(SettingsFile))
+            {
+                try
+                {
+                    File.Move(backupFile, SettingsFile);
+                }
+                catch { /* Best effort */ }
+            }
+
             return false;
         }
     }

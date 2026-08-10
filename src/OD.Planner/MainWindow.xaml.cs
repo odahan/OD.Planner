@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using OD.Planner.Data;
+using OD.Planner.Localization;
 using OD.Planner.Models;
 using OD.Planner.Services;
 using OD.Planner.ViewModels;
@@ -27,7 +28,7 @@ public partial class MainWindow : Window
     private const int HTBOTTOMLEFT = 16;
     private const int HTBOTTOMRIGHT = 17;
 
-    private const int ResizeBorder = 8;
+    private static int ResizeBorder => (int)(8 * SystemParameters.CaptionHeight / 30.0);
 
     private readonly MainViewModel _viewModel;
     private readonly AppSettings _settings;
@@ -254,7 +255,9 @@ public partial class MainWindow : Window
 
         var vm = new AlarmPopupViewModel(entries, _alarmEngine);
         var popup = new AlarmPopup { DataContext = vm, Owner = this };
+        popup.Language = System.Windows.Markup.XmlLanguage.GetLanguage(LocalizationService.Instance.CurrentCulture.Name);
         vm.AllResolved += popup.Close;
+        popup.Closed += (_, _) => _alarmPopup = null;
         PlacePopup(popup);
         popup.Show();
         _alarmPopup = popup;

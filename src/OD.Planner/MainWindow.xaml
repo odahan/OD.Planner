@@ -64,9 +64,9 @@
                           SelectedItem="{Binding SelectedCategoryFilter}"
                           DisplayMemberPath="DisplayName"
                           ToolTip="{loc:Loc FilterByCategory}" />
-                <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc ShowCompleted}"
-                          IsChecked="{Binding ShowCompleted}" Margin="12,0,0,0" VerticalAlignment="Center"
-                          ToolTip="{loc:Loc ShowCompletedTasks}" />
+                <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc HideCompleted}"
+                          IsChecked="{Binding HideCompleted}" Margin="12,0,0,0" VerticalAlignment="Center"
+                          ToolTip="{loc:Loc HideCompletedTasks}" />
                 <Button Grid.Column="2" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding AddTaskCommand}"
                         Margin="12,0,0,0" ToolTip="{loc:Loc NewTaskShortcut}">
                     <StackPanel Orientation="Horizontal">

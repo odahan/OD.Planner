@@ -194,22 +194,10 @@ public sealed partial class TaskItemViewModel : ObservableObject
         _hasCategory = _categoryName is not null;
 
         _isBlinking = !Task.IsCompleted &&
-                      ((days.HasValue && days < 0) || Task.Priority == Priority.VeryUrgent);
+                       ((days.HasValue && days < 0) || Task.Priority == Priority.VeryUrgent);
         _glowBrush = Cache.Get("AlarmGlowBrush");
 
-        OnPropertyChanged(nameof(Title));
-        OnPropertyChanged(nameof(IsCompleted));
-        OnPropertyChanged(nameof(CategoryLabel));
-        OnPropertyChanged(nameof(HasCategory));
-        OnPropertyChanged(nameof(PriorityLabel));
-        OnPropertyChanged(nameof(PriorityBackground));
-        OnPropertyChanged(nameof(PriorityForeground));
-        OnPropertyChanged(nameof(DeadlineText));
-        OnPropertyChanged(nameof(DeadlineVisible));
-        OnPropertyChanged(nameof(DeadlineForeground));
-        OnPropertyChanged(nameof(DeadlineBackground));
-        OnPropertyChanged(nameof(IsBlinking));
-        OnPropertyChanged(nameof(GlowBrush));
+        OnPropertyChanged(string.Empty);
     }
 
     /// <summary>

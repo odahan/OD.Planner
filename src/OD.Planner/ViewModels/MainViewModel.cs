@@ -72,10 +72,10 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private TaskItemViewModel? selectedTask;
 
     /// <summary>
-    /// Gets or sets whether completed tasks are shown.
+    /// Gets or sets whether completed tasks are hidden from the list.
     /// </summary>
     [ObservableProperty]
-    private bool showCompleted;
+    private bool hideCompleted;
 
     /// <summary>
     /// Gets whether there are any tasks.
@@ -96,21 +96,29 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         _settings = settings;
         _themes = themes;
         _alarmEngine = alarmEngine;
-        showCompleted = settings.ShowCompleted;
+        hideCompleted = !settings.ShowCompleted;
 
         _blinkTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(650) };
         _blinkTimer.Tick += (_, _) => OnBlinkTick();
         _themeChangedHandler = _ => RefreshList();
         _themes.ThemeChanged += _themeChangedHandler;
+        LocalizationService.LanguageChangedStatic += OnLanguageChanged;
 
         RefreshCategories();
         RefreshList();
         UpdateBlinkTimer();
     }
 
-    partial void OnShowCompletedChanged(bool value)
+    private void OnLanguageChanged(object? sender, EventArgs e)
     {
-        _settings.ShowCompleted = value;
+        RefreshCategories();
+        RefreshList();
+        RefreshLocalizedText();
+    }
+
+    partial void OnHideCompletedChanged(bool value)
+    {
+        _settings.ShowCompleted = !value;
         SettingsService.Save(_settings);
         RefreshList();
     }
@@ -150,13 +158,14 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             query = query.Where(t => t.CategoryId == categoryId);
         }
 
-        if (!ShowCompleted)
+        if (HideCompleted)
         {
             query = query.Where(t => !t.IsCompleted);
         }
 
-        var ordered = TaskSortService.Sort(query);
+        var ordered = TaskSortService.Sort(query).ToList();
 
+        // Rebuild the list to ensure sorting and filtering are applied
         Tasks.Clear();
         foreach (var task in ordered)
         {
@@ -166,9 +175,22 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             Tasks.Add(new TaskItemViewModel(task, categoryName));
         }
 
-        OnPropertyChanged(nameof(HasTasks));
-        OnPropertyChanged(nameof(NoTasks));
+        OnPropertyChanged(string.Empty);
         UpdateBlinkTimer();
+    }
+
+    /// <summary>
+    /// Refreshes localized text for all existing task items without rebuilding the list.
+    /// Called when language changes to update labels immediately.
+    /// </summary>
+    public void RefreshLocalizedText()
+    {
+        foreach (var item in Tasks)
+        {
+            item.Refresh();
+        }
+
+        OnPropertyChanged(string.Empty);
     }
 
     /// <summary>
@@ -322,9 +344,10 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             _db,
             _themes,
             onDatabaseChanged: ChangeDatabase,
-            onShowCompletedChanged: value => ShowCompleted = value,
+            onShowCompletedChanged: value => HideCompleted = !value,
             onCategoriesChanged: RefreshCategories);
         var dialog = new SettingsDialog { DataContext = vm, Owner = Application.Current.MainWindow };
+        dialog.Language = System.Windows.Markup.XmlLanguage.GetLanguage(LocalizationService.Instance.CurrentCulture.Name);
         dialog.ShowDialog();
     }
 
@@ -332,6 +355,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
         var vm = new TaskEditViewModel(task, _db.GetCategories());
         var dialog = new TaskEditDialog { DataContext = vm, Owner = Application.Current.MainWindow };
+        dialog.Language = System.Windows.Markup.XmlLanguage.GetLanguage(LocalizationService.Instance.CurrentCulture.Name);
         if (dialog.ShowDialog() != true || !vm.Save())
         {
             return;
@@ -405,5 +429,6 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         _disposed = true;
         _blinkTimer.Stop();
         _themes.ThemeChanged -= _themeChangedHandler;
+        LocalizationService.LanguageChangedStatic -= OnLanguageChanged;
     }
 }

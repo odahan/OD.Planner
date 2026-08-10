@@ -60,7 +60,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     private bool isDarkTheme;
 
     /// <summary>
-    /// Gets or sets whether completed tasks are shown.
+    /// Gets or sets whether completed tasks are shown (settings dialog).
     /// </summary>
     [ObservableProperty]
     private bool showCompleted;
