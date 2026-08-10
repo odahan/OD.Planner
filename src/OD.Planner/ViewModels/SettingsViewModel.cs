@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -58,6 +59,8 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private string dbPath = string.Empty;
+
+    public string AppVersion => $"v{Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.0"}";
 
     public SettingsViewModel(
         AppSettings settings,

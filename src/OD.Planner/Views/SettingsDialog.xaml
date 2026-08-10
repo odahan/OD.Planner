@@ -141,7 +141,7 @@
             <StackPanel Grid.Row="6" Margin="0,18,0,0">
                 <TextBlock Style="{StaticResource CaptionTextStyle}" HorizontalAlignment="Center"
                            Foreground="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,8">
-                    <Run Text="OD.Planner version 1.3.0 - © 2026 Olivier Dahan" />
+                    <Run Text="{Binding AppVersion, StringFormat=OD.Planner {0} - © 2026 Olivier Dahan}" />
                 </TextBlock>
                 <Button Style="{StaticResource PrimaryButtonStyle}" Content="Fermer" Click="CloseWindow_Click"
                         HorizontalAlignment="Right" />
