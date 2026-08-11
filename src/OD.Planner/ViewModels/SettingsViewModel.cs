@@ -273,7 +273,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            CategoryError = $"Erreur : {ex.Message}";
+            CategoryError = string.Format(LocalizationService.Instance["CategoryOperationFailed"], ex.Message);
         }
     }
 

@@ -9,10 +9,10 @@ public sealed class AlarmEngine : IDisposable
 {
     private static readonly TimeSpan SnoozeInterval = TimeSpan.FromHours(1);
 
-    private readonly Func<IReadOnlyList<PlannerTask>> _getTasks;
+    private Func<IReadOnlyList<PlannerTask>> _getTasks;
     private readonly AppSettings _settings;
     private readonly SoundService _sounds;
-    private readonly HashSet<(long TaskId, AlarmLevel Level)> _stopped = new();
+    private readonly Dictionary<(long TaskId, AlarmLevel Level), DateTime?> _stopped = new();
     private readonly Dictionary<(long TaskId, AlarmLevel Level), SnoozeState> _snoozes = new();
     private DispatcherTimer? _midnightTimer;
 
@@ -34,6 +34,16 @@ public sealed class AlarmEngine : IDisposable
 
     public event Action? MidnightPassed;
 
+    /// <summary>
+    /// Replaces the task source used by the alarm engine.
+    /// </summary>
+    public void SetTaskSource(Func<IReadOnlyList<PlannerTask>> getTasks)
+    {
+        ArgumentNullException.ThrowIfNull(getTasks);
+        _getTasks = getTasks;
+        ResetSession();
+    }
+
     public void Start()
     {
         ScheduleMidnight();
@@ -52,25 +62,27 @@ public sealed class AlarmEngine : IDisposable
                 continue;
             }
 
-            var days = DeadlineCalculator.GetDaysRemaining(task, today);
-            if (!days.HasValue)
+            var deadline = DeadlineCalculator.GetEffectiveDeadline(task);
+            if (!deadline.HasValue)
             {
                 continue;
             }
 
-            var level = AlarmEvaluator.GetLevel(days.Value);
+            var days = (int)(deadline.Value.Date - today).TotalDays;
+
+            var level = AlarmEvaluator.GetLevel(days);
             if (level == AlarmLevel.None || !IsLevelEnabled(level))
             {
                 continue;
             }
 
             var key = (task.Id, level);
-            if (_stopped.Contains(key) || _snoozes.ContainsKey(key))
+            if (IsStoppedForCurrentDeadline(key, deadline) || IsSnoozedForCurrentDeadline(key, deadline))
             {
                 continue;
             }
 
-            pending.Add(new AlarmEntry { Task = task, Level = level, DaysRemaining = days.Value });
+            pending.Add(new AlarmEntry { Task = task, Level = level, DaysRemaining = days });
         }
 
         if (pending.Count > 0)
@@ -82,7 +94,8 @@ public sealed class AlarmEngine : IDisposable
     public void Snooze(AlarmEntry entry)
     {
         var key = (entry.Task.Id, entry.Level);
-        if (_stopped.Contains(key) || _snoozes.ContainsKey(key))
+        var deadline = DeadlineCalculator.GetEffectiveDeadline(entry.Task);
+        if (IsStoppedForCurrentDeadline(key, deadline) || IsSnoozedForCurrentDeadline(key, deadline))
         {
             return;
         }
@@ -104,7 +117,7 @@ public sealed class AlarmEngine : IDisposable
     public void Stop(AlarmEntry entry)
     {
         var key = (entry.Task.Id, entry.Level);
-        _stopped.Add(key);
+        _stopped[key] = DeadlineCalculator.GetEffectiveDeadline(entry.Task);
         if (_snoozes.Remove(key, out var state))
         {
             state.Timer.Stop();
@@ -140,33 +153,63 @@ public sealed class AlarmEngine : IDisposable
 
     private void ReFire(SnoozeState state)
     {
-        var key = (state.TaskSnapshot.Id, state.Level);
-        if (_stopped.Contains(key))
+        var task = _getTasks().FirstOrDefault(candidate => candidate.Id == state.TaskSnapshot.Id);
+        if (task is null || task.IsCompleted)
         {
             return;
         }
 
-        if (state.TaskSnapshot.IsCompleted)
+        var deadline = DeadlineCalculator.GetEffectiveDeadline(task);
+        if (!deadline.HasValue)
         {
             return;
         }
 
-        var days = DeadlineCalculator.GetDaysRemaining(state.TaskSnapshot, DateTime.Today);
-        if (!days.HasValue)
-        {
-            return;
-        }
-
-        var level = AlarmEvaluator.GetLevel(days.Value);
-        if (level == AlarmLevel.None || !IsLevelEnabled(level))
+        var days = (int)(deadline.Value.Date - DateTime.Today).TotalDays;
+        var level = AlarmEvaluator.GetLevel(days);
+        var key = (task.Id, level);
+        if (level == AlarmLevel.None || IsStoppedForCurrentDeadline(key, deadline) || !IsLevelEnabled(level))
         {
             return;
         }
 
         Raise(new List<AlarmEntry>
         {
-            new() { Task = state.TaskSnapshot, Level = level, DaysRemaining = days.Value },
+            new() { Task = task, Level = level, DaysRemaining = days },
         });
+    }
+
+    private bool IsStoppedForCurrentDeadline((long TaskId, AlarmLevel Level) key, DateTime? deadline)
+    {
+        if (!_stopped.TryGetValue(key, out var stoppedDeadline))
+        {
+            return false;
+        }
+
+        if (stoppedDeadline == deadline)
+        {
+            return true;
+        }
+
+        _stopped.Remove(key);
+        return false;
+    }
+
+    private bool IsSnoozedForCurrentDeadline((long TaskId, AlarmLevel Level) key, DateTime? deadline)
+    {
+        if (!_snoozes.TryGetValue(key, out var state))
+        {
+            return false;
+        }
+
+        if (DeadlineCalculator.GetEffectiveDeadline(state.TaskSnapshot) == deadline)
+        {
+            return true;
+        }
+
+        state.Timer.Stop();
+        _snoozes.Remove(key);
+        return false;
     }
 
     private void Raise(IReadOnlyList<AlarmEntry> entries)

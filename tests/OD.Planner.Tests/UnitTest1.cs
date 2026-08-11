@@ -59,6 +59,18 @@ public class DeadlineCalculatorTests
     }
 
     [Fact]
+    public void GetEffectiveDeadline_DaysFromCreationWithoutDays_ReturnsNull()
+    {
+        var task = new PlannerTask
+        {
+            DeadlineType = DeadlineType.DaysFromCreation,
+            CreatedAt = new DateTime(2024, 1, 1),
+        };
+
+        Assert.Null(DeadlineCalculator.GetEffectiveDeadline(task));
+    }
+
+    [Fact]
     public void GetDaysRemaining_Today_ReturnsZero()
     {
         var task = new PlannerTask
@@ -230,5 +242,21 @@ public class TaskSortServiceTests
 
         Assert.Equal(2, result[0].Id);
         Assert.Equal(1, result[1].Id);
+    }
+
+    [Fact]
+    public void Sort_UsesPriorityThenCreationDateWhenDeadlinesMatch()
+    {
+        var deadline = new DateTime(2024, 6, 1);
+        var tasks = new List<PlannerTask>
+        {
+            new() { Id = 1, Priority = Priority.Urgent, DeadlineType = DeadlineType.FixedDate, DeadlineDate = deadline, CreatedAt = new DateTime(2024, 1, 2) },
+            new() { Id = 2, Priority = Priority.VeryUrgent, DeadlineType = DeadlineType.FixedDate, DeadlineDate = deadline, CreatedAt = new DateTime(2024, 1, 3) },
+            new() { Id = 3, Priority = Priority.Urgent, DeadlineType = DeadlineType.FixedDate, DeadlineDate = deadline, CreatedAt = new DateTime(2024, 1, 1) },
+        };
+
+        var result = TaskSortService.Sort(tasks).Select(task => task.Id).ToList();
+
+        Assert.Equal(new long[] { 2, 3, 1 }, result);
     }
 }

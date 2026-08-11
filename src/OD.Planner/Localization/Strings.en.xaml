@@ -101,5 +101,6 @@
     <system:String x:Key="ConfirmDeleteTask">Delete the task "{0}"?</system:String>
     <system:String x:Key="DaysSuffix">d</system:String>
     <system:String x:Key="ErrorOccurred">An error occurred:&#x0a;{0}</system:String>
+    <system:String x:Key="CategoryOperationFailed">Error: {0}</system:String>
 
 </ResourceDictionary>

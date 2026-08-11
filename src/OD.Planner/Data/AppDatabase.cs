@@ -40,6 +40,7 @@ public sealed class AppDatabase
             DataSource = dbPath,
             Mode = SqliteOpenMode.ReadWriteCreate,
             Cache = SqliteCacheMode.Private,
+            ForeignKeys = true,
         }.ToString();
     }
 

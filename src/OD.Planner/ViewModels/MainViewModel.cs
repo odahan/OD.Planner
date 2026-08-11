@@ -213,7 +213,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
         _db = new AppDatabase(path);
         _db.EnsureCreated();
-        _alarmEngine.ResetSession();
+        _alarmEngine.SetTaskSource(() => _db.GetTasks());
         RefreshCategories();
         RefreshList();
     }

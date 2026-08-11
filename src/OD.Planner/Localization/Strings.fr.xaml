@@ -101,5 +101,6 @@
     <system:String x:Key="ConfirmDeleteTask">Supprimer la tâche « {0} » ?</system:String>
     <system:String x:Key="DaysSuffix">j</system:String>
     <system:String x:Key="ErrorOccurred">Une erreur est survenue :&#x0a;{0}</system:String>
+    <system:String x:Key="CategoryOperationFailed">Erreur : {0}</system:String>
 
 </ResourceDictionary>
