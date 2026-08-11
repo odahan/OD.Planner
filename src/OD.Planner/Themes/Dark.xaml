@@ -18,6 +18,15 @@
     <SolidColorBrush x:Key="AccentPressedBrush" Color="#AAB0FB" />
     <SolidColorBrush x:Key="AccentSubtleBrush" Color="#2E2F66" />
 
+    <!-- Calendar -->
+    <SolidColorBrush x:Key="CalendarTodayBackgroundBrush" Color="#34376F" />
+    <SolidColorBrush x:Key="CalendarTodayForegroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="CalendarTodayBorderBrush" Color="#C7CAFF" />
+    <SolidColorBrush x:Key="CalendarSelectedBackgroundBrush" Color="#C7CAFF" />
+    <SolidColorBrush x:Key="CalendarSelectedHoverBackgroundBrush" Color="#D8DAFF" />
+    <SolidColorBrush x:Key="CalendarSelectedForegroundBrush" Color="#16181D" />
+    <SolidColorBrush x:Key="CalendarSelectedBorderBrush" Color="#FFFFFF" />
+
     <!-- Window -->
     <SolidColorBrush x:Key="WindowButtonHoverBrush" Color="#343943" />
     <SolidColorBrush x:Key="CloseButtonHoverBrush" Color="#C42B1C" />
