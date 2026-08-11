@@ -72,10 +72,10 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private TaskItemViewModel? selectedTask;
 
     /// <summary>
-    /// Gets or sets whether completed tasks are hidden from the list.
+    /// Gets or sets whether completed tasks are shown in the list.
     /// </summary>
     [ObservableProperty]
-    private bool hideCompleted;
+    private bool showCompleted;
 
     /// <summary>
     /// Gets whether there are any tasks.
@@ -96,7 +96,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         _settings = settings;
         _themes = themes;
         _alarmEngine = alarmEngine;
-        hideCompleted = !settings.ShowCompleted;
+        showCompleted = settings.ShowCompleted;
 
         _blinkTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(650) };
         _blinkTimer.Tick += (_, _) => OnBlinkTick();
@@ -116,9 +116,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         RefreshLocalizedText();
     }
 
-    partial void OnHideCompletedChanged(bool value)
+    partial void OnShowCompletedChanged(bool value)
     {
-        _settings.ShowCompleted = !value;
+        _settings.ShowCompleted = value;
         SettingsService.Save(_settings);
         RefreshList();
     }
@@ -158,7 +158,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             query = query.Where(t => t.CategoryId == categoryId);
         }
 
-        if (HideCompleted)
+        if (!ShowCompleted)
         {
             query = query.Where(t => !t.IsCompleted);
         }
@@ -344,7 +344,6 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             _db,
             _themes,
             onDatabaseChanged: ChangeDatabase,
-            onShowCompletedChanged: value => HideCompleted = !value,
             onCategoriesChanged: RefreshCategories);
         var dialog = new SettingsDialog { DataContext = vm, Owner = Application.Current.MainWindow };
         dialog.Language = System.Windows.Markup.XmlLanguage.GetLanguage(LocalizationService.Instance.CurrentCulture.Name);

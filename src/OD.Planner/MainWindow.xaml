@@ -39,6 +39,8 @@
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button Style="{StaticResource WindowButtonStyle}" Content="&#xE713;"
+                            FontSize="13"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
                             Command="{Binding OpenSettingsCommand}"
                             AutomationProperties.Name="{loc:Loc SettingsTooltip}"
                             AutomationProperties.AutomationId="SettingsButton"
@@ -64,9 +66,9 @@
                           SelectedItem="{Binding SelectedCategoryFilter}"
                           DisplayMemberPath="DisplayName"
                           ToolTip="{loc:Loc FilterByCategory}" />
-                <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc HideCompleted}"
-                          IsChecked="{Binding HideCompleted}" Margin="12,0,0,0" VerticalAlignment="Center"
-                          ToolTip="{loc:Loc HideCompletedTasks}" />
+                <CheckBox Grid.Column="1" Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc CompletedTasks}"
+                          IsChecked="{Binding ShowCompleted}" Margin="12,0,0,0" VerticalAlignment="Center"
+                          ToolTip="{loc:Loc ShowCompletedTasks}" />
                 <Button Grid.Column="2" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding AddTaskCommand}"
                         Margin="12,0,0,0" ToolTip="{loc:Loc NewTaskShortcut}">
                     <StackPanel Orientation="Horizontal">

@@ -12,8 +12,6 @@
     <conv:BoolToOpacityConverter x:Key="BlinkOpacity" OnOpacity="1" OffOpacity="0" />
     <conv:BoolToOpacityConverter x:Key="DisabledOpacity" OnOpacity="1" OffOpacity="0.4" />
 
-    <conv:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-
     <conv:EmptyToVisibilityConverter x:Key="EmptyToCollapsed" />
     <conv:EmptyToVisibilityConverter x:Key="EmptyToVisible" ShowWhenEmpty="True" />
 

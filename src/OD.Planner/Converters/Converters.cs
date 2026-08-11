@@ -59,19 +59,6 @@ public sealed class BoolToOpacityConverter : IValueConverter
         => throw new NotSupportedException();
 }
 
-public sealed class InverseBooleanConverter : IValueConverter
-{
-    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        return value is bool b && !b;
-    }
-
-    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        return value is bool b && !b;
-    }
-}
-
 public sealed class EmptyToVisibilityConverter : IValueConverter
 {
     public bool ShowWhenEmpty { get; init; }

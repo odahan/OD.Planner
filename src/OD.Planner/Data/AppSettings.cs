@@ -38,7 +38,7 @@ public sealed class AppSettings
     /// <summary>
     /// Gets or sets whether completed tasks are shown.
     /// </summary>
-    public bool ShowCompleted { get; set; } = true;
+    public bool ShowCompleted { get; set; }
 
     /// <summary>
     /// Gets or sets whether the application starts with Windows.

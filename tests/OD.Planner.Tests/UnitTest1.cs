@@ -3,6 +3,17 @@ using OD.Planner.Models;
 
 namespace OD.Planner.Tests;
 
+public class AppSettingsTests
+{
+    [Fact]
+    public void ShowCompleted_DefaultsToFalse()
+    {
+        var settings = new global::OD.Planner.Data.AppSettings();
+
+        Assert.False(settings.ShowCompleted);
+    }
+}
+
 public class DeadlineCalculatorTests
 {
     [Fact]

@@ -21,7 +21,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly AppDatabase _db;
     private readonly ThemeService _themes;
     private readonly Action<string> _onDatabaseChanged;
-    private readonly Action<bool> _onShowCompletedChanged;
     private readonly Action _onCategoriesChanged;
 
     /// <summary>
@@ -58,12 +57,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private bool isDarkTheme;
-
-    /// <summary>
-    /// Gets or sets whether completed tasks are shown (settings dialog).
-    /// </summary>
-    [ObservableProperty]
-    private bool showCompleted;
 
     /// <summary>
     /// Gets or sets whether the application starts with Windows.
@@ -158,18 +151,15 @@ public sealed partial class SettingsViewModel : ObservableObject
         AppDatabase db,
         ThemeService themes,
         Action<string> onDatabaseChanged,
-        Action<bool> onShowCompletedChanged,
         Action onCategoriesChanged)
     {
         _settings = settings;
         _db = db;
         _themes = themes;
         _onDatabaseChanged = onDatabaseChanged;
-        _onShowCompletedChanged = onShowCompletedChanged;
         _onCategoriesChanged = onCategoriesChanged;
 
         isDarkTheme = settings.IsDarkTheme;
-        showCompleted = settings.ShowCompleted;
         autoStart = settings.AutoStartEnabled;
         soundEnabled = settings.SoundEnabled;
         j1Enabled = settings.J1Enabled;
@@ -199,8 +189,6 @@ public sealed partial class SettingsViewModel : ObservableObject
         _themes.Apply(value);
         SettingsService.Save(_settings);
     }
-
-    partial void OnShowCompletedChanged(bool value) => _onShowCompletedChanged(value);
 
     partial void OnAutoStartChanged(bool value)
     {

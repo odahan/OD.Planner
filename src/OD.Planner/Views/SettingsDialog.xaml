@@ -51,8 +51,6 @@
                         <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc DarkTheme}"
                                   IsChecked="{Binding IsDarkTheme}"
                                   AutomationProperties.AutomationId="ThemeToggle" />
-                        <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc HideCompletedTasks}"
-                                  IsChecked="{Binding ShowCompleted, Converter={StaticResource InverseBooleanConverter}}" />
                         <CheckBox Style="{StaticResource ToggleSwitchStyle}" Content="{loc:Loc ReduceAnimations}"
                                   IsChecked="{Binding ReduceAnimations}" />
                     </StackPanel>

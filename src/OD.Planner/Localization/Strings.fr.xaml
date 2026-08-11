@@ -7,7 +7,8 @@
     <system:String x:Key="AppVersion">OD.Planner {0} - © 2026 Olivier Dahan</system:String>
 
     <!-- ===== Main Window ===== -->
-    <system:String x:Key="HideCompleted">Terminées</system:String>
+    <system:String x:Key="CompletedTasks">Terminées</system:String>
+    <system:String x:Key="ShowCompletedTasks">Afficher les tâches terminées</system:String>
     <system:String x:Key="AddTask">Ajouter</system:String>
     <system:String x:Key="FilterByCategory">Filtrer par catégorie</system:String>
     <system:String x:Key="ShowAllCategories">Toutes</system:String>
@@ -49,7 +50,6 @@
     <system:String x:Key="SettingsTitle">Paramètres</system:String>
     <system:String x:Key="Appearance">APPARENCE</system:String>
     <system:String x:Key="DarkTheme">Thème sombre</system:String>
-    <system:String x:Key="HideCompletedTasks">Masquer les tâches terminées</system:String>
     <system:String x:Key="ReduceAnimations">Réduire les animations (clignotement)</system:String>
     <system:String x:Key="SoundAlarms">ALARMES SONORES</system:String>
     <system:String x:Key="EnableSoundAlarms">Activer les alarmes sonores</system:String>
