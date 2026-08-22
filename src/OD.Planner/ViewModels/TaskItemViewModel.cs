@@ -52,6 +52,16 @@ public sealed partial class TaskItemViewModel : ObservableObject
     public string Title => Task.Title;
 
     /// <summary>
+    /// Gets the task comment, if any.
+    /// </summary>
+    public string? Comment => Task.Comment;
+
+    /// <summary>
+    /// Gets whether the task has a comment to display in a tooltip.
+    /// </summary>
+    public bool HasComment => !string.IsNullOrWhiteSpace(Task.Comment);
+
+    /// <summary>
     /// Gets whether the task is completed.
     /// </summary>
     public bool IsCompleted => Task.IsCompleted;

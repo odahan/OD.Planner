@@ -8,7 +8,7 @@ namespace OD.Planner.Data;
 public sealed class AppDatabase
 {
     private readonly string _connectionString;
-    private const int CurrentSchemaVersion = 1;
+    private const int CurrentSchemaVersion = 2;
 
     private static readonly string[] DateFormats =
     [
@@ -65,6 +65,7 @@ public sealed class AppDatabase
             CREATE TABLE IF NOT EXISTS tasks (
                 Id            INTEGER PRIMARY KEY AUTOINCREMENT,
                 Title         TEXT    NOT NULL,
+                Comment       TEXT    NULL,
                 CategoryId    INTEGER NULL REFERENCES categories(Id) ON DELETE SET NULL,
                 Priority      INTEGER NOT NULL DEFAULT 1,
                 DeadlineType  INTEGER NOT NULL DEFAULT 0,
@@ -131,10 +132,12 @@ public sealed class AppDatabase
         {
             switch (v)
             {
-                // Future migrations go here:
-                // case 0:
-                //     Execute(conn, "ALTER TABLE tasks ADD COLUMN ...");
-                //     break;
+                case 1:
+                    if (!HasColumn(conn, "tasks", "Comment"))
+                    {
+                        Execute(conn, "ALTER TABLE tasks ADD COLUMN Comment TEXT NULL");
+                    }
+                    break;
                 default:
                     break;
             }
@@ -146,6 +149,25 @@ public sealed class AppDatabase
         using var cmd = conn.CreateCommand();
         cmd.CommandText = sql;
         cmd.ExecuteNonQuery();
+    }
+
+    /// <summary>
+    /// Determines whether a table contains a column.
+    /// </summary>
+    private static bool HasColumn(SqliteConnection conn, string tableName, string columnName)
+    {
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = $"PRAGMA table_info({tableName})";
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            if (string.Equals(reader.GetString(1), columnName, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // ----- Categories -----
@@ -205,7 +227,7 @@ public sealed class AppDatabase
         using var conn = Open();
         conn.Open();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT Id, Title, CategoryId, Priority, DeadlineType, DeadlineDays, DeadlineDate, CreatedAt, IsCompleted, CompletedAt FROM tasks";
+        cmd.CommandText = "SELECT Id, Title, Comment, CategoryId, Priority, DeadlineType, DeadlineDays, DeadlineDate, CreatedAt, IsCompleted, CompletedAt FROM tasks";
         using var reader = cmd.ExecuteReader();
         while (reader.Read())
         {
@@ -213,16 +235,17 @@ public sealed class AppDatabase
             {
                 Id = reader.GetInt64(0),
                 Title = reader.GetString(1),
-                CategoryId = reader.IsDBNull(2) ? null : reader.GetInt64(2),
-                Priority = (Priority)reader.GetInt32(3),
-                DeadlineType = (DeadlineType)reader.GetInt32(4),
-                DeadlineDays = reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                DeadlineDate = reader.IsDBNull(6) ? null : ParseDate(reader.GetString(6)),
-                CreatedAt = ParseDateTime(reader.GetString(7)),
-                IsCompleted = reader.GetInt64(8) != 0,
-                CompletedAt = reader.IsDBNull(9)
+                Comment = reader.IsDBNull(2) ? null : reader.GetString(2),
+                CategoryId = reader.IsDBNull(3) ? null : reader.GetInt64(3),
+                Priority = (Priority)reader.GetInt32(4),
+                DeadlineType = (DeadlineType)reader.GetInt32(5),
+                DeadlineDays = reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                DeadlineDate = reader.IsDBNull(7) ? null : ParseDate(reader.GetString(7)),
+                CreatedAt = ParseDateTime(reader.GetString(8)),
+                IsCompleted = reader.GetInt64(9) != 0,
+                CompletedAt = reader.IsDBNull(10)
                     ? null
-                    : ParseDateTime(reader.GetString(9)),
+                    : ParseDateTime(reader.GetString(10)),
             });
         }
 
@@ -249,11 +272,12 @@ public sealed class AppDatabase
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = """
-            INSERT INTO tasks (Title, CategoryId, Priority, DeadlineType, DeadlineDays, DeadlineDate, CreatedAt, IsCompleted, CompletedAt)
-            VALUES ($title, $cat, $prio, $dtype, $ddays, $ddate, $created, $done, $doneat);
+            INSERT INTO tasks (Title, Comment, CategoryId, Priority, DeadlineType, DeadlineDays, DeadlineDate, CreatedAt, IsCompleted, CompletedAt)
+            VALUES ($title, $comment, $cat, $prio, $dtype, $ddays, $ddate, $created, $done, $doneat);
             SELECT last_insert_rowid();
             """;
         cmd.Parameters.AddWithValue("$title", task.Title);
+        cmd.Parameters.AddWithValue("$comment", (object?)task.Comment ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$cat", (object?)task.CategoryId ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$prio", (int)task.Priority);
         cmd.Parameters.AddWithValue("$dtype", (int)task.DeadlineType);
@@ -272,13 +296,14 @@ public sealed class AppDatabase
         using var cmd = conn.CreateCommand();
         cmd.CommandText = """
             UPDATE tasks SET
-                Title = $title, CategoryId = $cat, Priority = $prio, DeadlineType = $dtype,
+                Title = $title, Comment = $comment, CategoryId = $cat, Priority = $prio, DeadlineType = $dtype,
                 DeadlineDays = $ddays, DeadlineDate = $ddate, CreatedAt = $created,
                 IsCompleted = $done, CompletedAt = $doneat
             WHERE Id = $id
             """;
         cmd.Parameters.AddWithValue("$id", task.Id);
         cmd.Parameters.AddWithValue("$title", task.Title);
+        cmd.Parameters.AddWithValue("$comment", (object?)task.Comment ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$cat", (object?)task.CategoryId ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$prio", (int)task.Priority);
         cmd.Parameters.AddWithValue("$dtype", (int)task.DeadlineType);

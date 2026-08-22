@@ -30,6 +30,7 @@
     <system:String x:Key="NewTaskTitle">Nouvelle tâche</system:String>
     <system:String x:Key="EditTaskTitle">Modifier la tâche</system:String>
     <system:String x:Key="TitleLabel">Titre</system:String>
+    <system:String x:Key="CommentLabel">Commentaire</system:String>
     <system:String x:Key="CategoryLabel">Catégorie</system:String>
     <system:String x:Key="PriorityLabel">Priorité</system:String>
     <system:String x:Key="DeadlineLabel">Échéance</system:String>

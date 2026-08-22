@@ -6,6 +6,7 @@ public sealed class PlannerTask
 
     public long Id { get; set; }
     public string Title { get; set; } = string.Empty;
+    public string? Comment { get; set; }
     public long? CategoryId { get; set; }
     public Priority Priority { get; set; } = Priority.Medium;
     public DeadlineType DeadlineType { get; set; } = DeadlineType.None;
@@ -25,6 +26,7 @@ public sealed class PlannerTask
     {
         Id = Id,
         Title = Title,
+        Comment = Comment,
         CategoryId = CategoryId,
         Priority = Priority,
         DeadlineType = DeadlineType,

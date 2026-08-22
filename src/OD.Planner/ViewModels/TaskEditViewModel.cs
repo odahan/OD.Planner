@@ -84,6 +84,12 @@ public sealed partial class TaskEditViewModel : ObservableObject
     private string title;
 
     /// <summary>
+    /// Gets or sets the task comment.
+    /// </summary>
+    [ObservableProperty]
+    private string? comment;
+
+    /// <summary>
     /// Gets or sets the selected category.
     /// </summary>
     [ObservableProperty]
@@ -139,6 +145,7 @@ public sealed partial class TaskEditViewModel : ObservableObject
         IsNew = original is null;
         Task = original?.Clone() ?? new PlannerTask { CreatedAt = DateTime.Now, Priority = Priority.Medium };
         title = Task.Title;
+        comment = Task.Comment;
         deadlineType = Task.DeadlineType;
         deadlineDays = Task.DeadlineDays ?? 1;
         deadlineDate = Task.DeadlineDate;
@@ -172,6 +179,7 @@ public sealed partial class TaskEditViewModel : ObservableObject
         }
 
         Task.Title = Title.Trim();
+        Task.Comment = string.IsNullOrWhiteSpace(Comment) ? null : Comment.Trim();
         Task.CategoryId = SelectedCategory?.Id;
         Task.Priority = SelectedPriority?.Value ?? Task.Priority;
         Task.DeadlineType = DeadlineType;

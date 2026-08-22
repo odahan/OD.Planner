@@ -113,7 +113,17 @@
                                                    VerticalAlignment="Stretch" />
 
                                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Title}" Style="{StaticResource TaskTitleTextStyle}" />
+                                            <TextBlock Text="{Binding Title}" Style="{StaticResource TaskTitleTextStyle}">
+                                                <TextBlock.ToolTip>
+                                                    <ToolTip Visibility="{Binding HasComment, Converter={StaticResource BoolToVisible}}"
+                                                             Background="{DynamicResource SurfaceBrush}"
+                                                             BorderBrush="{DynamicResource BorderBrush}"
+                                                             Foreground="{DynamicResource TextPrimaryBrush}"
+                                                             BorderThickness="1" Padding="10" MaxWidth="340">
+                                                        <TextBlock Text="{Binding Comment}" TextWrapping="Wrap" />
+                                                    </ToolTip>
+                                                </TextBlock.ToolTip>
+                                            </TextBlock>
                                             <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                                 <Border Style="{StaticResource CategoryChipStyle}"
                                                         Visibility="{Binding HasCategory, Converter={StaticResource BoolToVisible}}">
