@@ -2,7 +2,7 @@
 
 A lightweight, Windows-native task planner built with WPF and .NET. OD.Planner keeps your to-do list close at hand in a small, always-ready window and makes sure deadlines don't slip by — with audible alarms and color-coded urgency.
 
-![Version](https://img.shields.io/badge/version-1.3.5-blue)
+![Version](https://img.shields.io/badge/version-1.3.9-blue)
 ![License](https://img.shields.io/badge/license-Donationware-green)
 ![.NET](https://img.shields.io/badge/.NET-10.0-purple)
 
