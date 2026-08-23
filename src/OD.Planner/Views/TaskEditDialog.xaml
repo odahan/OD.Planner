@@ -31,7 +31,13 @@
 
                 <TextBlock Text="{loc:Loc CommentLabel}" Style="{StaticResource SectionHeaderTextStyle}" Margin="0,12,0,4" />
                 <TextBox Style="{StaticResource TaskCommentTextBoxStyle}"
-                         Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}" />
+                         Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Resources>
+                        <Style TargetType="ScrollBar" BasedOn="{StaticResource CompactScrollBarStyle}">
+                            <Setter Property="Width" Value="6" />
+                        </Style>
+                    </TextBox.Resources>
+                </TextBox>
 
                 <Grid Margin="0,12,0,0">
                     <Grid.ColumnDefinitions>
