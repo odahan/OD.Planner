@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using OD.Planner.Data;
 using OD.Planner.Localization;
+using OD.Planner.Logic;
 using OD.Planner.Models;
 using OD.Planner.Services;
 using OD.Planner.ViewModels;
@@ -258,18 +259,20 @@ public partial class MainWindow : Window
         popup.Language = System.Windows.Markup.XmlLanguage.GetLanguage(LocalizationService.Instance.CurrentCulture.Name);
         vm.AllResolved += popup.Close;
         popup.Closed += (_, _) => _alarmPopup = null;
-        PlacePopup(popup);
-        popup.Show();
+        popup.WindowStartupLocation = WindowStartupLocation.Manual;
+        popup.Loaded += (_, _) => PlacePopup(popup);
         _alarmPopup = popup;
+        popup.Show();
     }
 
     private void PlacePopup(AlarmPopup popup)
     {
-        popup.WindowStartupLocation = WindowStartupLocation.Manual;
-        popup.UpdateLayout();
-        var work = SystemParameters.WorkArea;
-        popup.Left = work.Right - popup.ActualWidth - 16;
-        popup.Top = work.Bottom - popup.ActualHeight - 16;
+        var ownerBounds = new Rect(Left, Top, ActualWidth, ActualHeight);
+        var popupSize = new Size(popup.ActualWidth, popup.ActualHeight);
+        var position = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, 16);
+
+        popup.Left = position.X;
+        popup.Top = position.Y;
     }
 
     private void OnMidnightPassed() => _viewModel.RefreshDeadlines();

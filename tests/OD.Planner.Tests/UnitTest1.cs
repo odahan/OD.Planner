@@ -182,6 +182,31 @@ public class AlarmEvaluatorTests
     }
 }
 
+public class PopupPlacementCalculatorTests
+{
+    [Fact]
+    public void CalculateBottomRight_PlacesMeasuredPopupInsideOwner()
+    {
+        var ownerBounds = new System.Windows.Rect(1488, 16, 400, 692);
+        var popupSize = new System.Windows.Size(340, 180);
+
+        var result = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, 16);
+
+        Assert.Equal(new System.Windows.Point(1532, 512), result);
+    }
+
+    [Fact]
+    public void CalculateBottomRight_KeepsOversizedPopupAttachedToOwnerEdges()
+    {
+        var ownerBounds = new System.Windows.Rect(1500, 20, 300, 240);
+        var popupSize = new System.Windows.Size(340, 420);
+
+        var result = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, 16);
+
+        Assert.Equal(new System.Windows.Point(1460, 20), result);
+    }
+}
+
 public class TaskSortServiceTests
 {
     [Fact]
