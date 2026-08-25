@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using OD.Planner.Data;
 using OD.Planner.Localization;
 using OD.Planner.Logic;
@@ -17,6 +18,11 @@ public partial class MainWindow : Window
 {
     private const int WM_NCHITTEST = 0x84;
     private const int WM_GETMINMAXINFO = 0x24;
+
+    private const uint MONITOR_DEFAULTTONEAREST = 0x00000002;
+    private const uint SWP_NOSIZE = 0x0001;
+    private const uint SWP_NOZORDER = 0x0004;
+    private const uint SWP_NOACTIVATE = 0x0010;
 
     private const int HTCLIENT = 1;
     private const int HTCAPTION = 2;
@@ -267,12 +273,36 @@ public partial class MainWindow : Window
 
     private void PlacePopup(AlarmPopup popup)
     {
-        var ownerBounds = new Rect(Left, Top, ActualWidth, ActualHeight);
-        var popupSize = new Size(popup.ActualWidth, popup.ActualHeight);
-        var position = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, 16);
+        var ownerHandle = new WindowInteropHelper(this).Handle;
+        var popupHandle = new WindowInteropHelper(popup).Handle;
+        var monitorHandle = MonitorFromWindow(ownerHandle, MONITOR_DEFAULTTONEAREST);
+        var monitorInfo = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
 
-        popup.Left = position.X;
-        popup.Top = position.Y;
+        if (ownerHandle == IntPtr.Zero ||
+            popupHandle == IntPtr.Zero ||
+            monitorHandle == IntPtr.Zero ||
+            !GetWindowRect(ownerHandle, out var ownerRect) ||
+            !GetWindowRect(popupHandle, out var popupRect) ||
+            !GetMonitorInfo(monitorHandle, ref monitorInfo))
+        {
+            return;
+        }
+
+        var ownerBounds = ownerRect.ToRect();
+        var popupSize = new Size(popupRect.Width, popupRect.Height);
+        var workArea = monitorInfo.rcWork.ToRect();
+        var dpi = VisualTreeHelper.GetDpi(popup);
+        var margin = 16 * dpi.DpiScaleX;
+        var position = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, workArea, margin);
+
+        SetWindowPos(
+            popupHandle,
+            IntPtr.Zero,
+            (int)Math.Round(position.X),
+            (int)Math.Round(position.Y),
+            0,
+            0,
+            SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
     }
 
     private void OnMidnightPassed() => _viewModel.RefreshDeadlines();
@@ -293,4 +323,50 @@ public partial class MainWindow : Window
         public POINT ptMinTrackSize;
         public POINT ptMaxTrackSize;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NATIVE_RECT
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+
+        public readonly int Width => Right - Left;
+
+        public readonly int Height => Bottom - Top;
+
+        public readonly Rect ToRect() => new(Left, Top, Width, Height);
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MONITORINFO
+    {
+        public int cbSize;
+        public NATIVE_RECT rcMonitor;
+        public NATIVE_RECT rcWork;
+        public uint dwFlags;
+    }
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetWindowRect(IntPtr windowHandle, out NATIVE_RECT rectangle);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromWindow(IntPtr windowHandle, uint flags);
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetMonitorInfo(IntPtr monitorHandle, ref MONITORINFO monitorInfo);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetWindowPos(
+        IntPtr windowHandle,
+        IntPtr insertAfter,
+        int x,
+        int y,
+        int width,
+        int height,
+        uint flags);
 }

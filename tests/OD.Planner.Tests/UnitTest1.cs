@@ -189,21 +189,35 @@ public class PopupPlacementCalculatorTests
     {
         var ownerBounds = new System.Windows.Rect(1488, 16, 400, 692);
         var popupSize = new System.Windows.Size(340, 180);
+        var workArea = new System.Windows.Rect(0, 0, 1920, 1040);
 
-        var result = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, 16);
+        var result = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, workArea, 16);
 
         Assert.Equal(new System.Windows.Point(1532, 512), result);
     }
 
     [Fact]
-    public void CalculateBottomRight_KeepsOversizedPopupAttachedToOwnerEdges()
+    public void CalculateBottomRight_ClampsPopupInsideSecondMonitorWorkArea()
     {
-        var ownerBounds = new System.Windows.Rect(1500, 20, 300, 240);
+        var ownerBounds = new System.Windows.Rect(3440, 16, 400, 1100);
         var popupSize = new System.Windows.Size(340, 420);
+        var workArea = new System.Windows.Rect(1920, 0, 1920, 1040);
 
-        var result = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, 16);
+        var result = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, workArea, 16);
 
-        Assert.Equal(new System.Windows.Point(1460, 20), result);
+        Assert.Equal(new System.Windows.Point(3484, 604), result);
+    }
+
+    [Fact]
+    public void CalculateBottomRight_AlignsOversizedPopupWithWorkAreaOrigin()
+    {
+        var ownerBounds = new System.Windows.Rect(-400, 0, 400, 300);
+        var popupSize = new System.Windows.Size(2100, 1200);
+        var workArea = new System.Windows.Rect(-1920, 0, 1920, 1040);
+
+        var result = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, workArea, 16);
+
+        Assert.Equal(new System.Windows.Point(-1920, 0), result);
     }
 }
 
