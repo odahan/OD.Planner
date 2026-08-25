@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
 using OD.Planner.Data;
 using OD.Planner.Localization;
 using OD.Planner.Logic;
@@ -266,7 +265,12 @@ public partial class MainWindow : Window
         vm.AllResolved += popup.Close;
         popup.Closed += (_, _) => _alarmPopup = null;
         popup.WindowStartupLocation = WindowStartupLocation.Manual;
-        popup.Loaded += (_, _) => PlacePopup(popup);
+        popup.Opacity = 0;
+        popup.ContentRendered += (_, _) =>
+        {
+            PlacePopup(popup);
+            popup.Opacity = 1;
+        };
         _alarmPopup = popup;
         popup.Show();
     }
@@ -291,9 +295,7 @@ public partial class MainWindow : Window
         var ownerBounds = ownerRect.ToRect();
         var popupSize = new Size(popupRect.Width, popupRect.Height);
         var workArea = monitorInfo.rcWork.ToRect();
-        var dpi = VisualTreeHelper.GetDpi(popup);
-        var margin = 16 * dpi.DpiScaleX;
-        var position = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, workArea, margin);
+        var position = PopupPlacementCalculator.CalculateCenteredOnOwner(ownerBounds, popupSize, workArea);
 
         SetWindowPos(
             popupHandle,

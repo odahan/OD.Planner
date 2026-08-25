@@ -3,37 +3,30 @@ using System.Windows;
 namespace OD.Planner.Logic;
 
 /// <summary>
-/// Calculates the position of a popup relative to its owner and monitor work area.
+/// Calculates the position of a popup within a monitor work area.
 /// </summary>
 public static class PopupPlacementCalculator
 {
     /// <summary>
-    /// Places a popup at the bottom-right of its owner and keeps the entire popup inside
-    /// the monitor work area.
+    /// Centers a popup over its owner and keeps it entirely within the monitor work area.
+    /// When the popup is larger than the work area, its top-left corner is aligned with
+    /// the work area's top-left corner.
     /// </summary>
     /// <param name="ownerBounds">The owner window bounds.</param>
     /// <param name="popupSize">The measured popup size.</param>
     /// <param name="workArea">The monitor work area containing the owner.</param>
-    /// <param name="margin">The preferred inner margin from the owner edges.</param>
     /// <returns>The popup's top-left position.</returns>
-    public static Point CalculateBottomRight(Rect ownerBounds, Size popupSize, Rect workArea, double margin)
+    public static Point CalculateCenteredOnOwner(Rect ownerBounds, Size popupSize, Rect workArea)
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(margin);
+        var desiredLeft = ownerBounds.Left + ((ownerBounds.Width - popupSize.Width) / 2);
+        var desiredTop = ownerBounds.Top + ((ownerBounds.Height - popupSize.Height) / 2);
 
-        var desiredLeft = ownerBounds.Right - popupSize.Width - margin;
-        var desiredTop = ownerBounds.Bottom - popupSize.Height - margin;
-
-        var minimumLeft = workArea.Left + margin;
-        var maximumLeft = workArea.Right - popupSize.Width - margin;
-        var minimumTop = workArea.Top + margin;
-        var maximumTop = workArea.Bottom - popupSize.Height - margin;
-
-        var left = maximumLeft >= minimumLeft
-            ? Math.Clamp(desiredLeft, minimumLeft, maximumLeft)
+        var left = popupSize.Width <= workArea.Width
+            ? Math.Clamp(desiredLeft, workArea.Left, workArea.Right - popupSize.Width)
             : workArea.Left;
 
-        var top = maximumTop >= minimumTop
-            ? Math.Clamp(desiredTop, minimumTop, maximumTop)
+        var top = popupSize.Height <= workArea.Height
+            ? Math.Clamp(desiredTop, workArea.Top, workArea.Bottom - popupSize.Height)
             : workArea.Top;
 
         return new Point(left, top);

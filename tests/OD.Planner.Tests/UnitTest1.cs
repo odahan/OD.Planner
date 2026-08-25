@@ -185,37 +185,37 @@ public class AlarmEvaluatorTests
 public class PopupPlacementCalculatorTests
 {
     [Fact]
-    public void CalculateBottomRight_PlacesMeasuredPopupInsideOwner()
+    public void CalculateCenteredOnOwner_CentersPopupOverPlanner()
     {
         var ownerBounds = new System.Windows.Rect(1488, 16, 400, 692);
         var popupSize = new System.Windows.Size(340, 180);
         var workArea = new System.Windows.Rect(0, 0, 1920, 1040);
 
-        var result = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, workArea, 16);
+        var result = PopupPlacementCalculator.CalculateCenteredOnOwner(ownerBounds, popupSize, workArea);
 
-        Assert.Equal(new System.Windows.Point(1532, 512), result);
+        Assert.Equal(new System.Windows.Point(1518, 272), result);
     }
 
     [Fact]
-    public void CalculateBottomRight_ClampsPopupInsideSecondMonitorWorkArea()
+    public void CalculateCenteredOnOwner_KeepsPopupInsideSecondMonitorWorkArea()
     {
-        var ownerBounds = new System.Windows.Rect(3440, 16, 400, 1100);
+        var ownerBounds = new System.Windows.Rect(3440, 900, 400, 300);
         var popupSize = new System.Windows.Size(340, 420);
         var workArea = new System.Windows.Rect(1920, 0, 1920, 1040);
 
-        var result = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, workArea, 16);
+        var result = PopupPlacementCalculator.CalculateCenteredOnOwner(ownerBounds, popupSize, workArea);
 
-        Assert.Equal(new System.Windows.Point(3484, 604), result);
+        Assert.Equal(new System.Windows.Point(3470, 620), result);
     }
 
     [Fact]
-    public void CalculateBottomRight_AlignsOversizedPopupWithWorkAreaOrigin()
+    public void CalculateCenteredOnOwner_AlignsOversizedPopupWithWorkAreaOrigin()
     {
         var ownerBounds = new System.Windows.Rect(-400, 0, 400, 300);
         var popupSize = new System.Windows.Size(2100, 1200);
         var workArea = new System.Windows.Rect(-1920, 0, 1920, 1040);
 
-        var result = PopupPlacementCalculator.CalculateBottomRight(ownerBounds, popupSize, workArea, 16);
+        var result = PopupPlacementCalculator.CalculateCenteredOnOwner(ownerBounds, popupSize, workArea);
 
         Assert.Equal(new System.Windows.Point(-1920, 0), result);
     }

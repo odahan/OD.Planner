@@ -18,7 +18,7 @@
             </Grid.RowDefinitions>
 
             <!-- Header -->
-            <Grid MouseLeftButtonDown="Header_MouseLeftButtonDown">
+            <Grid Background="Transparent" MouseLeftButtonDown="Header_MouseLeftButtonDown">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="&#xEA8F;" FontFamily="{StaticResource IconFontFamily}" FontSize="14"
                                Foreground="{DynamicResource OverdueForeground}" VerticalAlignment="Center" />
