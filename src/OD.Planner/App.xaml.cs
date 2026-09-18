@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -36,6 +37,8 @@ public partial class App : Application
     private SoundService? _sounds;
     private AlarmEngine? _alarmEngine;
     private MainViewModel? _mainViewModel;
+    private Mutex? _singleInstanceMutex;
+    private bool _ownsSingleInstanceMutex;
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Application.Startup"/> event.
@@ -44,6 +47,20 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        _singleInstanceMutex = new Mutex(true, "OD.Planner-SingleInstance-Mutex", out var isNewInstance);
+        if (!isNewInstance)
+        {
+            MessageBox.Show(
+                "OD.Planner is already running. This instance will now close.",
+                "OD.Planner - Already Running",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            Shutdown();
+            return;
+        }
+
+        _ownsSingleInstanceMutex = true;
         DispatcherUnhandledException += OnDispatcherUnhandledException;
 
         RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
@@ -149,6 +166,17 @@ public partial class App : Application
         _alarmEngine?.Dispose();
         _mainViewModel?.Dispose();
         _sounds?.Dispose();
+
+        if (_singleInstanceMutex is not null)
+        {
+            if (_ownsSingleInstanceMutex)
+            {
+                _singleInstanceMutex.ReleaseMutex();
+            }
+
+            _singleInstanceMutex.Dispose();
+        }
+
         base.OnExit(e);
     }
 }
