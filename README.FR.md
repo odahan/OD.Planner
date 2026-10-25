@@ -2,7 +2,7 @@
 
 Un gestionnaire de tâches léger et natif pour Windows, développé avec WPF et .NET. OD.Planner garde votre liste de tâches à portée de main dans une petite fenêtre toujours prête et s'assure que les échéances ne passent pas inaperçues — avec des alarmes sonores et une priorité par code couleur.
 
-![Version](https://img.shields.io/badge/version-1.4.0-blue)
+![Version](https://img.shields.io/badge/version-1.5.0-blue)
 ![License](https://img.shields.io/badge/license-Donationware-green)
 ![.NET](https://img.shields.io/badge/.NET-10.0-purple)
 
@@ -12,6 +12,8 @@ Un gestionnaire de tâches léger et natif pour Windows, développé avec WPF et
 - **Échéances flexibles** — les échéances peuvent être une date fixe ou un nombre de jours après la création, et peuvent être reportées d'un jour ou d'un simple clic.
 - **Urgence d'un coup d'œil** — les tâches sont triées et codées par couleur selon l'échéance, avec un soulignement clignotant pour les tâches qui sont sur le point de devenir en retard (les animations peuvent être réduites ou désactivées).
 - **Catégories** — organisez les tâches en catégories et filtrez la liste d'un simple clic.
+- **Vues À faire et Terminées** — affichez séparément les tâches actives et terminées. Chaque démarrage ouvre la vue À faire.
+- **Rapports HTML** — exportez les tâches actives, terminées ou toutes les tâches, sans filtre de catégorie, dans un rapport sombre autonome qui s’ouvre dans le navigateur par défaut.
 - **Alarmes sonores** — alertes sonores optionnelles la veille de l'échéance (J-1), le jour de l'échéance (J0), et quand une tâche est en retard. Chaque alarme peut être activée ou désactivée indépendamment.
 - **Compatible zone de notification** — minimisez en arrière-plan ; les alarmes et les passages de minuit continuent de fonctionner lorsque l'application est en arrière-plan.
 - **Thèmes sombre et clair** — changez à tout moment ; le choix est mémorisé entre les sessions.
@@ -29,7 +31,7 @@ Un gestionnaire de tâches léger et natif pour Windows, développé avec WPF et
 ```powershell
 git clone https://github.com/odahan/OD.Planner.git
 cd OD.Planner
-dotnet build OD.Planner.slnx -c Release
+dotnet build OD.Planner.slnx -c Release -m:1
 ```
 
 Exécuter l'application :
@@ -56,6 +58,8 @@ L'exécutable est écrit dans `src/OD.Planner/bin/Release/net10.0-windows/win-x6
 - `F2` — modifier la tâche sélectionnée
 - `Delete` — supprimer la tâche sélectionnée
 - Cliquez sur **+1 jour** / **+1 semaine** sur une tâche pour reporter son échéance.
+- Utilisez **À faire | Terminées** pour choisir les tâches affichées ; le choix Terminées n’est pas mémorisé entre les sessions.
+- Cliquez sur l’icône **Exporter en HTML** à côté d’**Ajouter**, choisissez le mode et enregistrez le fichier proposé `ODPlanner-YYYYMMDD.html`. Toutes les catégories sont incluses. Le mode Tous intercale les statuts selon l’échéance, la priorité puis la date de création.
 - Ouvrez les **Paramètres** (icône engrenage) pour configurer le thème, la langue, les alarmes, les catégories, le démarrage automatique et l'emplacement de la base de données.
 
 ## Documentation
@@ -75,7 +79,7 @@ OD.Planner est publié en tant que **donationware**. Voir les fichiers [License.
 
 ## Version
 
-Version actuelle : **1.4.0**
+Version actuelle : **1.5.0**
 
 ## Auteur
 

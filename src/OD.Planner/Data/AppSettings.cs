@@ -36,11 +36,6 @@ public sealed class AppSettings
     public bool IsDarkTheme { get; set; }
 
     /// <summary>
-    /// Gets or sets whether completed tasks are shown.
-    /// </summary>
-    public bool ShowCompleted { get; set; }
-
-    /// <summary>
     /// Gets or sets whether the application starts with Windows.
     /// </summary>
     public bool AutoStartEnabled { get; set; }

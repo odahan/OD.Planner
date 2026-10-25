@@ -52,7 +52,7 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsCompleted}" Value="True">
                 <Setter Property="TextDecorations" Value="Strikethrough" />
-                <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>

@@ -1,8 +1,13 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using OD.Planner.Data;
 using OD.Planner.Localization;
 using OD.Planner.Logic;
@@ -72,10 +77,20 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private TaskItemViewModel? selectedTask;
 
     /// <summary>
-    /// Gets or sets whether completed tasks are shown in the list.
+    /// Gets or sets whether the list shows completed tasks instead of active tasks.
     /// </summary>
     [ObservableProperty]
     private bool showCompleted;
+
+    /// <summary>
+    /// Gets whether the active task view is selected.
+    /// </summary>
+    public bool ShowActive => !ShowCompleted;
+
+    /// <summary>
+    /// Gets the localized empty-state message for the selected task view.
+    /// </summary>
+    public string EmptyStateText => LocalizationService.Instance[ShowCompleted ? "NoCompletedTasks" : "NoActiveTasks"];
 
     /// <summary>
     /// Gets whether there are any tasks.
@@ -96,7 +111,6 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         _settings = settings;
         _themes = themes;
         _alarmEngine = alarmEngine;
-        showCompleted = settings.ShowCompleted;
 
         _blinkTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(650) };
         _blinkTimer.Tick += (_, _) => OnBlinkTick();
@@ -118,8 +132,6 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     partial void OnShowCompletedChanged(bool value)
     {
-        _settings.ShowCompleted = value;
-        SettingsService.Save(_settings);
         RefreshList();
     }
 
@@ -158,14 +170,11 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             query = query.Where(t => t.CategoryId == categoryId);
         }
 
-        if (!ShowCompleted)
-        {
-            query = query.Where(t => !t.IsCompleted);
-        }
+        query = query.Where(t => t.IsCompleted == ShowCompleted);
 
         var ordered = TaskSortService.Sort(query).ToList();
 
-        // Rebuild the list to ensure sorting and filtering are applied
+        SelectedTask = null;
         Tasks.Clear();
         foreach (var task in ordered)
         {
@@ -219,6 +228,78 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     }
 
     // ----- Commands -----
+
+    /// <summary>
+    /// Selects the view containing only active tasks.
+    /// </summary>
+    [RelayCommand]
+    private void ShowActiveTasks() => ShowCompleted = false;
+
+    /// <summary>
+    /// Selects the view containing only completed tasks.
+    /// </summary>
+    [RelayCommand]
+    private void ShowDoneTasks() => ShowCompleted = true;
+
+    /// <summary>
+    /// Saves an HTML report for the selected task statuses and opens it in the default browser.
+    /// </summary>
+    [RelayCommand]
+    private async Task ExportTasksAsync()
+    {
+        var owner = Application.Current.MainWindow;
+        var viewModel = new TaskExportViewModel(ShowCompleted);
+        var dialog = new TaskExportDialog { DataContext = viewModel, Owner = owner };
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        var generatedAt = DateTimeOffset.Now;
+        var saveDialog = new SaveFileDialog
+        {
+            Title = LocalizationService.Instance["ExportTasks"],
+            Filter = LocalizationService.Instance["HtmlFileFilter"],
+            DefaultExt = ".html",
+            AddExtension = true,
+            OverwritePrompt = true,
+            FileName = $"ODPlanner-{generatedAt:yyyyMMdd}.html",
+        };
+        if (saveDialog.ShowDialog(owner) != true)
+        {
+            return;
+        }
+
+        generatedAt = DateTimeOffset.Now;
+        try
+        {
+            var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.0";
+            var report = HtmlTaskReport.Generate(
+                _db.GetTasks(),
+                _db.GetCategories().ToDictionary(category => category.Id, category => category.Name),
+                viewModel.SelectedMode.Mode,
+                version,
+                Environment.UserName,
+                generatedAt);
+            await File.WriteAllTextAsync(saveDialog.FileName, report, new UTF8Encoding(false));
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(owner, string.Format(LocalizationService.Instance["ExportFailed"], ex.Message),
+                LocalizationService.Instance["ExportTasks"], MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo(new Uri(saveDialog.FileName).AbsoluteUri) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(owner, string.Format(LocalizationService.Instance["ExportOpenFailed"], saveDialog.FileName, ex.Message),
+                LocalizationService.Instance["ExportTasks"], MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
 
     /// <summary>
     /// Shows the task editor to create a new task.
@@ -363,6 +444,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         if (vm.IsNew)
         {
             vm.Task.Id = _db.InsertTask(vm.Task);
+            ShowCompleted = false;
         }
         else
         {

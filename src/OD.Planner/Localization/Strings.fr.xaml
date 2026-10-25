@@ -8,6 +8,9 @@
 
     <!-- ===== Main Window ===== -->
     <system:String x:Key="CompletedTasks">Terminées</system:String>
+    <system:String x:Key="ActiveTasks">À faire</system:String>
+    <system:String x:Key="NoActiveTasks">Aucune tâche à faire</system:String>
+    <system:String x:Key="NoCompletedTasks">Aucune tâche terminée</system:String>
     <system:String x:Key="ShowCompletedTasks">Afficher les tâches terminées</system:String>
     <system:String x:Key="AddTask">Ajouter</system:String>
     <system:String x:Key="FilterByCategory">Filtrer par catégorie</system:String>
@@ -18,6 +21,13 @@
     <system:String x:Key="NewTaskShortcut">Nouvelle tâche (Ctrl+N)</system:String>
 
     <!-- ===== Task Row ===== -->
+    <system:String x:Key="ExportTasks">Exporter en HTML</system:String>
+    <system:String x:Key="ExportDescription">Choisissez les tâches à exporter. Toutes les catégories sont incluses.</system:String>
+    <system:String x:Key="ExportMode">Tâches à exporter</system:String>
+    <system:String x:Key="HtmlFileFilter">Rapport HTML (*.html)|*.html</system:String>
+    <system:String x:Key="ExportFailed">Impossible d’enregistrer le rapport : {0}</system:String>
+    <system:String x:Key="ExportOpenFailed">Le rapport a été enregistré dans {0}, mais n’a pas pu être ouvert dans le navigateur par défaut : {1}</system:String>
+
     <system:String x:Key="AddOneDay">+1j</system:String>
     <system:String x:Key="AddOneWeek">+1sem</system:String>
     <system:String x:Key="EditTaskTooltip">Modifier (F2)</system:String>

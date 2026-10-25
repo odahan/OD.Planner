@@ -2,7 +2,7 @@
 
 A lightweight, Windows-native task planner built with WPF and .NET. OD.Planner keeps your to-do list close at hand in a small, always-ready window and makes sure deadlines don't slip by — with audible alarms and color-coded urgency.
 
-![Version](https://img.shields.io/badge/version-1.4.1-blue)
+![Version](https://img.shields.io/badge/version-1.5.0-blue)
 ![License](https://img.shields.io/badge/license-Donationware-green)
 ![.NET](https://img.shields.io/badge/.NET-10.0-purple)
 
@@ -12,6 +12,8 @@ A lightweight, Windows-native task planner built with WPF and .NET. OD.Planner k
 - **Flexible deadlines** — deadlines can be a fixed date or a number of days from creation, and can be pushed back by one day or one week with a single click.
 - **Urgency at a glance** — tasks are sorted and color-coded by deadline, with a blinking highlight for tasks that are about to become overdue (animations can be reduced or disabled).
 - **Categories** — organize tasks into categories and filter the list with one click.
+- **Active and Done views** — switch between pending and completed tasks. Each launch starts in Active.
+- **HTML reports** — export Active, Done, or All tasks across every category to a standalone dark report that opens in your default browser.
 - **Audible alarms** — optional sound alerts the day before a deadline (J-1), on the due day (J0), and when a task is overdue. Each alarm can be enabled or disabled independently.
 - **System tray friendly** — minimize to the background; alarms and midnight rollovers keep working while the app is in the background.
 - **Dark & light themes** — switch at any time; the choice is remembered between sessions.
@@ -29,7 +31,7 @@ A lightweight, Windows-native task planner built with WPF and .NET. OD.Planner k
 ```powershell
 git clone https://github.com/odahan/OD.Planner.git
 cd OD.Planner
-dotnet build OD.Planner.slnx -c Release
+dotnet build OD.Planner.slnx -c Release -m:1
 ```
 
 Run the app:
@@ -56,6 +58,8 @@ The executable is written to `src/OD.Planner/bin/Release/net10.0-windows/win-x64
 - `F2` — edit selected task
 - `Delete` — delete selected task
 - Click **+1 day** / **+1 week** on a task to push its deadline back.
+- Use **Active | Done** to choose which tasks to display; the Done selection is not saved between sessions.
+- Click **Export HTML** beside **Add**, choose Active, Done, or All, and save the suggested `ODPlanner-YYYYMMDD.html` file. Exports include all categories. All mode interleaves task statuses by deadline, priority, and creation date.
 - Open **Settings** (gear icon) to configure theme, language, alarms, categories, autostart, and the database location.
 
 ## Documentation
@@ -75,7 +79,7 @@ OD.Planner is released as **donationware**. See the [License.txt](License.txt) a
 
 ## Version
 
-Current version: **1.4.1**
+Current version: **1.5.0**
 
 ## Author
 

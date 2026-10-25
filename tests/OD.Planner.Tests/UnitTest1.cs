@@ -6,11 +6,13 @@ namespace OD.Planner.Tests;
 public class AppSettingsTests
 {
     [Fact]
-    public void ShowCompleted_DefaultsToFalse()
+    public void LegacyCompletedView_IsIgnoredAndNotPersisted()
     {
-        var settings = new global::OD.Planner.Data.AppSettings();
+        var settings = System.Text.Json.JsonSerializer.Deserialize<global::OD.Planner.Data.AppSettings>(
+            "{\"ShowCompleted\":true}");
 
-        Assert.False(settings.ShowCompleted);
+        Assert.NotNull(settings);
+        Assert.DoesNotContain("ShowCompleted", System.Text.Json.JsonSerializer.Serialize(settings));
     }
 }
 

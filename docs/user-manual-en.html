@@ -81,7 +81,8 @@
     <p>The main window displays your task list with:</p>
     <ul>
         <li>A category filter dropdown to show only tasks from a specific category</li>
-        <li>A checkbox to show/hide completed tasks</li>
+        <li>An Active | Done selector to show either active or completed tasks</li>
+        <li>An Export HTML button to save an Active, Done, or All report across all categories</li>
         <li>An "Add" button to create new tasks</li>
     </ul>
 
@@ -99,7 +100,9 @@
     <p>Select a task and press <span class="shortcut">F2</span> or click the edit button to modify it.</p>
 
     <h3>Completing a Task</h3>
-    <p>Click the checkbox next to a task to mark it as completed. Completed tasks can be hidden using the "Completed" checkbox.</p>
+    <p>Click the checkbox next to a task to mark it as completed. The task moves from Active to Done. Uncheck it in Done to return it to Active. Each launch starts in Active; the selected view is not saved.</p>
+    <h3>Exporting an HTML report</h3>
+    <p>Click Export HTML beside Add, select Active, Done, or All, then choose where to save ODPlanner-YYYYMMDD.html. The standalone dark report opens in your default browser and includes all categories, the application version, generation date and Windows user. All mode interleaves active and completed tasks by deadline, priority and creation date. A green box with a dot indicates an active task, red indicates a task due today or overdue, and a white box with a diagonal cross indicates a completed task.</p>
 
     <h3>Deleting a Task</h3>
     <p>Click the delete button next to a task. You'll be asked to confirm the deletion.</p>
@@ -148,7 +151,6 @@
     <h3>Appearance</h3>
     <ul>
         <li><strong>Dark theme</strong> - Switch between light and dark themes</li>
-        <li><strong>Show completed tasks</strong> - Toggle visibility of completed tasks</li>
         <li><strong>Reduce animations</strong> - Disable blinking animations for accessibility</li>
     </ul>
 

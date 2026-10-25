@@ -7,7 +7,10 @@
     <system:String x:Key="AppVersion">OD.Planner {0} - © 2026 Olivier Dahan</system:String>
 
     <!-- ===== Main Window ===== -->
-    <system:String x:Key="CompletedTasks">Completed</system:String>
+    <system:String x:Key="ActiveTasks">Active</system:String>
+    <system:String x:Key="CompletedTasks">Done</system:String>
+    <system:String x:Key="NoActiveTasks">No active tasks</system:String>
+    <system:String x:Key="NoCompletedTasks">No completed tasks</system:String>
     <system:String x:Key="ShowCompletedTasks">Show completed tasks</system:String>
     <system:String x:Key="AddTask">Add</system:String>
     <system:String x:Key="FilterByCategory">Filter by category</system:String>
@@ -18,6 +21,13 @@
     <system:String x:Key="NewTaskShortcut">New task (Ctrl+N)</system:String>
 
     <!-- ===== Task Row ===== -->
+    <system:String x:Key="ExportTasks">Export HTML</system:String>
+    <system:String x:Key="ExportDescription">Choose the tasks to export. All categories are included.</system:String>
+    <system:String x:Key="ExportMode">Tasks to export</system:String>
+    <system:String x:Key="HtmlFileFilter">HTML report (*.html)|*.html</system:String>
+    <system:String x:Key="ExportFailed">Could not save the report: {0}</system:String>
+    <system:String x:Key="ExportOpenFailed">The report was saved to {0}, but could not be opened in the default browser: {1}</system:String>
+
     <system:String x:Key="AddOneDay">+1d</system:String>
     <system:String x:Key="AddOneWeek">+1w</system:String>
     <system:String x:Key="EditTaskTooltip">Edit (F2)</system:String>
