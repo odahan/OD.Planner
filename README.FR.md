@@ -2,7 +2,7 @@
 
 Un gestionnaire de tâches léger et natif pour Windows, développé avec WPF et .NET. OD.Planner garde votre liste de tâches à portée de main dans une petite fenêtre toujours prête et s'assure que les échéances ne passent pas inaperçues — avec des alarmes sonores et une priorité par code couleur.
 
-![Version](https://img.shields.io/badge/version-1.5.0-blue)
+![Version](https://img.shields.io/badge/version-1.5.1-blue)
 ![License](https://img.shields.io/badge/license-Donationware-green)
 ![.NET](https://img.shields.io/badge/.NET-10.0-purple)
 
@@ -57,6 +57,7 @@ L'exécutable est écrit dans `src/OD.Planner/bin/Release/net10.0-windows/win-x6
 - `Ctrl+N` — nouvelle tâche
 - `F2` — modifier la tâche sélectionnée
 - `Delete` — supprimer la tâche sélectionnée
+- Double-cliquez sur le titre ou le fond d'une tâche pour déplier son commentaire sous la tâche. Double-cliquez à nouveau sur le commentaire ou l'en-tête pour le replier. Les boutons et la case de validation conservent leurs actions habituelles.
 - Cliquez sur **+1 jour** / **+1 semaine** sur une tâche pour reporter son échéance.
 - Utilisez **À faire | Terminées** pour choisir les tâches affichées ; le choix Terminées n’est pas mémorisé entre les sessions.
 - Cliquez sur l’icône **Exporter en HTML** à côté d’**Ajouter**, choisissez le mode et enregistrez le fichier proposé `ODPlanner-YYYYMMDD.html`. Toutes les catégories sont incluses. Le mode Tous intercale les statuts selon l’échéance, la priorité puis la date de création.
@@ -79,7 +80,7 @@ OD.Planner est publié en tant que **donationware**. Voir les fichiers [License.
 
 ## Version
 
-Version actuelle : **1.5.0**
+Version actuelle : **1.5.1**
 
 ## Auteur
 

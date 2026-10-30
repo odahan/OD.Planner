@@ -2,7 +2,7 @@
 
 A lightweight, Windows-native task planner built with WPF and .NET. OD.Planner keeps your to-do list close at hand in a small, always-ready window and makes sure deadlines don't slip by — with audible alarms and color-coded urgency.
 
-![Version](https://img.shields.io/badge/version-1.5.0-blue)
+![Version](https://img.shields.io/badge/version-1.5.1-blue)
 ![License](https://img.shields.io/badge/license-Donationware-green)
 ![.NET](https://img.shields.io/badge/.NET-10.0-purple)
 
@@ -57,6 +57,7 @@ The executable is written to `src/OD.Planner/bin/Release/net10.0-windows/win-x64
 - `Ctrl+N` — new task
 - `F2` — edit selected task
 - `Delete` — delete selected task
+- Double-click a task's title or background to expand its comment below the task. Double-click the comment or header again to collapse it. Buttons and the completion checkbox keep their usual actions.
 - Click **+1 day** / **+1 week** on a task to push its deadline back.
 - Use **Active | Done** to choose which tasks to display; the Done selection is not saved between sessions.
 - Click **Export HTML** beside **Add**, choose Active, Done, or All, and save the suggested `ODPlanner-YYYYMMDD.html` file. Exports include all categories. All mode interleaves task statuses by deadline, priority, and creation date.
@@ -79,7 +80,7 @@ OD.Planner is released as **donationware**. See the [License.txt](License.txt) a
 
 ## Version
 
-Current version: **1.5.0**
+Current version: **1.5.1**
 
 ## Author
 

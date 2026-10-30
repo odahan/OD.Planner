@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using OD.Planner.Localization;
 using OD.Planner.Logic;
 using OD.Planner.Models;
@@ -26,6 +27,12 @@ public sealed partial class TaskItemViewModel : ObservableObject
     private bool _isBlinking;
     private bool _blinkOn;
     private Brush? _glowBrush;
+
+    /// <summary>
+    /// Tracks whether the comment is expanded for this task in the current view.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isCommentExpanded;
 
     // Static cache for brushes - loaded once and reused across all instances.
     // This avoids repeated Application.Current.TryFindResource calls on every Refresh.
@@ -57,9 +64,21 @@ public sealed partial class TaskItemViewModel : ObservableObject
     public string? Comment => Task.Comment;
 
     /// <summary>
-    /// Gets whether the task has a comment to display in a tooltip.
+    /// Gets whether the task has a comment to display.
     /// </summary>
     public bool HasComment => !string.IsNullOrWhiteSpace(Task.Comment);
+
+    /// <summary>
+    /// Expands or collapses the comment without editing the task.
+    /// </summary>
+    [RelayCommand]
+    private void ToggleComment()
+    {
+        if (HasComment)
+        {
+            IsCommentExpanded = !IsCommentExpanded;
+        }
+    }
 
     /// <summary>
     /// Gets whether the task is completed.

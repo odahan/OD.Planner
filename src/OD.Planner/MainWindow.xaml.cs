@@ -1,8 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using OD.Planner.Data;
 using OD.Planner.Localization;
 using OD.Planner.Logic;
@@ -148,6 +151,37 @@ public partial class MainWindow : Window
         catch (InvalidOperationException)
         {
             // DragMove throws when the mouse button is not captured; ignore.
+        }
+    }
+
+    /// <summary>
+    /// Toggles the task comment on double-click while preserving embedded button actions.
+    /// </summary>
+    private void TaskRow_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ClickCount != 2 || sender is not FrameworkElement row ||
+            row.DataContext is not TaskItemViewModel item)
+        {
+            return;
+        }
+
+        var source = e.OriginalSource as DependencyObject;
+        while (source is not null && source != row)
+        {
+            if (source is ButtonBase)
+            {
+                return;
+            }
+
+            source = source is Visual or Visual3D
+                ? VisualTreeHelper.GetParent(source)
+                : LogicalTreeHelper.GetParent(source);
+        }
+
+        if (item.HasComment)
+        {
+            item.ToggleCommentCommand.Execute(null);
+            e.Handled = true;
         }
     }
 

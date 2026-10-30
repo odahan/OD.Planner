@@ -112,9 +112,14 @@
                     </ListBox.Resources>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border Style="{StaticResource TaskRowBorderStyle}">
+                            <Border Style="{StaticResource TaskRowBorderStyle}"
+                                    PreviewMouseLeftButtonDown="TaskRow_PreviewMouseLeftButtonDown">
                                 <Grid>
-                                    <Grid Margin="10,8">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid Margin="10,8" Background="Transparent">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="Auto" />
@@ -133,17 +138,7 @@
                                                    VerticalAlignment="Stretch" />
 
                                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Title}" Style="{StaticResource TaskTitleTextStyle}">
-                                                <TextBlock.ToolTip>
-                                                    <ToolTip Visibility="{Binding HasComment, Converter={StaticResource BoolToVisible}}"
-                                                             Background="{DynamicResource SurfaceBrush}"
-                                                             BorderBrush="{DynamicResource BorderBrush}"
-                                                             Foreground="{DynamicResource TextPrimaryBrush}"
-                                                             BorderThickness="1" Padding="10" MaxWidth="340">
-                                                        <TextBlock Text="{Binding Comment}" TextWrapping="Wrap" />
-                                                    </ToolTip>
-                                                </TextBlock.ToolTip>
-                                            </TextBlock>
+                                            <TextBlock Text="{Binding Title}" Style="{StaticResource TaskTitleTextStyle}" />
                                             <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                                 <Border Style="{StaticResource CategoryChipStyle}"
                                                         Visibility="{Binding HasCategory, Converter={StaticResource BoolToVisible}}">
@@ -184,7 +179,15 @@
                                         </StackPanel>
                                     </Grid>
 
-                                    <Border BorderBrush="{Binding GlowBrush}" BorderThickness="1.5" CornerRadius="7"
+                                    <Border Grid.Row="1" Margin="10,0,10,8" Padding="10"
+                                            Background="{DynamicResource SurfaceAltBrush}"
+                                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0"
+                                            Visibility="{Binding IsCommentExpanded, Converter={StaticResource BoolToVisible}}">
+                                        <TextBlock Text="{Binding Comment}" TextWrapping="Wrap"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                                    </Border>
+
+                                    <Border Grid.RowSpan="2" BorderBrush="{Binding GlowBrush}" BorderThickness="1.5" CornerRadius="7"
                                             IsHitTestVisible="False"
                                             Opacity="{Binding BlinkOn, Converter={StaticResource BlinkOpacity}}" />
                                 </Grid>
